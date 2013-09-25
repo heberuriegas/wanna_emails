@@ -1,0 +1,16 @@
+%p#notice= notice
+
+%p
+  %b Address:
+  = @email.address
+  %br
+  %br
+  Recollections:
+  %ul
+    - @email.recollections.each do |recollection|
+      %li= link_to recollection.name, project_recollection_path(recollection.project.id, recollection.id)
+
+
+= link_to 'Edit', edit_email_path(@email)
+\|
+= link_to 'Back', emails_path

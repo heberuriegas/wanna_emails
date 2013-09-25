@@ -1,0 +1,12 @@
+%p
+  %b Name:
+  = @project.name
+  %br
+  Recollections
+  = render 'recollections/table', recollections: @project.recollections.order(id: :desc)
+  %br
+  = link_to 'New recollection', new_project_recollection_path(@project.id)
+
+= link_to 'Edit', edit_project_path(@project)
+\|
+= link_to 'Back', projects_path

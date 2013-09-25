@@ -1,0 +1,8 @@
+%h1 New recollection
+
+= render 'form'
+
+= link_to 'Back', project_recollections_path(@project)
+
+- content_for :extra_js do
+  = yield :scripts

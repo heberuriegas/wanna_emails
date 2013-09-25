@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery.ui.all
 //= require bootstrap
-//= require turbolinks
+//= require gmaps.autocomplete
 //= require_tree .

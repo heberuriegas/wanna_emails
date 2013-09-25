@@ -1,0 +1,48 @@
+%p
+  %b Name:
+  = @recollection.name
+%p
+  %b Date:
+  = @recollection.date
+%p
+  %b Address:
+  = @recollection.address
+%p
+  %b Latitude:
+  = @recollection.latitude
+%p
+  %b Longitude:
+  = @recollection.longitude
+%p
+  %b Goal:
+  = @recollection.goal
+%p
+  %b Reach:
+  = @recollection.reach
+%p
+  %b Search:
+  = @recollection.search
+%p
+  %b Real Search:
+  = @recollection.search_query
+%p
+  %b Status:
+  = @recollection.status
+%p
+  %b Time:
+  = distance_of_time_in_words(@recollection.starts_at, @recollection.ends_at) if @recollection.starts_at.present? && @recollection.ends_at.present?
+%p
+  %b User:
+  = @recollection.user.email
+%p
+  %b Report:
+  = @recollection.report
+
+- if @recollection.state_name == :waiting
+  = link_to 'Start', project_recollection_path(@project, @recollection, { start: true })
+- if @recollection.state_name == :failed
+  = link_to 'Try Again', project_recollection_path(@project, @recollection, { try_again: true })
+
+= link_to 'Edit', edit_project_recollection_path(@project, @recollection)
+\|
+= link_to 'Back', project_recollections_path(@project)

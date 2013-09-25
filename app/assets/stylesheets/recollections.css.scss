@@ -1,0 +1,21 @@
+// Place all the styles related to the recollections controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+#gmaps-canvas {
+  width: 300px;
+  height: 150px;
+}
+
+.map_container, .gmaps4rails_map {
+  width: 100% !important;
+  height: 250px !important;
+  margin-bottom: 10px;
+}
+
+#map img { 
+  max-width: none;
+}
+#map label { 
+  width: auto; display:inline; 
+} 

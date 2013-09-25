@@ -5,7 +5,7 @@
       %title= content_for?(:title) ? yield(:title) : "Wanna Emails"
       %meta{:content => content_for?(:description) ? yield(:description) : "Wanna Emails", :name => "description"}
         = stylesheet_link_tag "application", :media => "all"
-        = javascript_include_tag "application"
+        = stylesheet_link_tag 'gmaps4rails'
         = csrf_meta_tags
         = yield(:head)
   %body{:class => "#{controller_name} #{action_name}"}
@@ -21,5 +21,6 @@
               = render 'layouts/messages'
               = yield
           %footer
-      / ! end of .container
-    / ! end of #main
+    %script{src: "http://maps.googleapis.com/maps/api/js?sensor=false", type: "text/javascript"}
+    = javascript_include_tag "application"
+    = yield :extra_js

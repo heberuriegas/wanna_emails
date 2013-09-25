@@ -38,3 +38,6 @@ module WannaEmails
     # config.i18n.default_locale = :de
   end
 end
+
+require 'nokogiri'
+require 'mechanize'

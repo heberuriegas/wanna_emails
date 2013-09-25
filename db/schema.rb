@@ -11,7 +11,62 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130921191105) do
+ActiveRecord::Schema.define(version: 20130924004427) do
+
+  create_table "campaigns", force: true do |t|
+    t.string   "name"
+    t.integer  "project_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "campaigns", ["project_id"], name: "index_campaigns_on_project_id", using: :btree
+  add_index "campaigns", ["user_id"], name: "index_campaigns_on_user_id", using: :btree
+
+  create_table "emails", force: true do |t|
+    t.string   "address"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "emails", ["address"], name: "index_emails_on_address", using: :btree
+
+  create_table "emails_recollections", id: false, force: true do |t|
+    t.integer "email_id"
+    t.integer "recollection_id"
+  end
+
+  add_index "emails_recollections", ["email_id", "recollection_id"], name: "index_emails_recollections_on_email_id_and_recollection_id", unique: true, using: :btree
+  add_index "emails_recollections", ["email_id"], name: "index_emails_recollections_on_email_id", using: :btree
+
+  create_table "projects", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "recollections", force: true do |t|
+    t.string   "name"
+    t.datetime "date"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.integer  "goal"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "address"
+    t.string   "recollection"
+    t.integer  "project_id"
+    t.string   "search"
+    t.integer  "state"
+    t.datetime "starts_at"
+    t.datetime "ends_at"
+    t.text     "report"
+  end
+
+  add_index "recollections", ["project_id"], name: "index_recollections_on_project_id", using: :btree
+  add_index "recollections", ["user_id"], name: "index_recollections_on_user_id", using: :btree
 
   create_table "roles", force: true do |t|
     t.string   "name"
@@ -23,6 +78,12 @@ ActiveRecord::Schema.define(version: 20130921191105) do
 
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
+
+  create_table "tags", force: true do |t|
+    t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false

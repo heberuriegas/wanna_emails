@@ -1,0 +1,23 @@
+%h1 Listing emails
+
+= "Total: #{Email.count}"
+
+%table
+  %tr
+    %th Id
+    %th Address
+    %th
+    %th
+    %th
+
+  - @emails.each do |email|
+    %tr
+      %td= email.id
+      %td= email.address
+      %td= link_to 'Show', email
+      %td= link_to 'Edit', edit_email_path(email)
+      %td= link_to 'Destroy', email, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+= paginate @emails
+= link_to 'New Email', new_email_path

@@ -1,0 +1,25 @@
+= simple_form_for @recollection, url: project_recollection_path(@project,@recollection) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :name
+    = f.input :address, input_html: { id: 'gmaps-input-address' }, :placeholder => 'Start typing a place...'
+    = f.input :goal
+    = f.input :latitude, input_html: { id: 'gmaps-output-latitude' }, as: :hidden
+    = f.input :longitude, input_html: { id: 'gmaps-output-longitude' }, as: :hidden
+    = f.input :search
+    #gmaps-canvas
+    #gmaps-error
+  .form-actions
+    = f.button :submit
+
+- content_for :extra_js do
+  :javascript
+    if($("#gmaps-canvas").length){
+      gmaps_init();
+      autocomplete_init();
+    }
+
+  - unless @recollection.nil?
+    :javascript
+      update_data("#{@recollection.address}", new google.maps.LatLng("#{@recollection.latitude}","#{@recollection.longitude}"))

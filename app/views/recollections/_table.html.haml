@@ -1,0 +1,28 @@
+= gmaps4rails(recollections.to_gmaps4rails)
+%table
+  %tr
+    %th Name
+    %th Date
+    %th Address
+    %th Goal
+    %th Search
+    %th Status
+    %th Time
+    %th
+    %th
+    %th
+
+  - recollections.each do |recollection|
+    %tr
+      %td= link_to recollection.name, project_recollection_path(@project,recollection)
+      %td= recollection.date
+      %td= recollection.address      
+      %td= recollection.goal
+      %td= recollection.search
+      %td= recollection.status
+      %td= distance_of_time_in_words(recollection.starts_at, recollection.ends_at) if recollection.starts_at.present? && recollection.ends_at.present?
+      %td= link_to 'Edit', edit_project_recollection_path(@project,recollection)
+      %td= link_to 'Destroy', project_recollection_path(@project, recollection), :method => :delete, :data => { :confirm => 'Are you sure?' }
+      
+- content_for :extra_js do
+  = yield :scripts

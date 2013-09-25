@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @campaign.name
+%p
+  %b Project:
+  = @campaign.project
+%p
+  %b User:
+  = @campaign.user
+
+= link_to 'Edit', edit_campaign_path(@campaign)
+\|
+= link_to 'Back', campaigns_path
