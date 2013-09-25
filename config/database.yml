@@ -1,0 +1,35 @@
+development:
+  adapter: postgresql
+  encoding: utf8
+  reconnect: false
+  pool: 5
+  database: wanna_emails_development
+  username: <%=ENV['PGUSER']%>
+  password: <%=ENV['PGPASSWORD']%>
+  host:     localhost
+  port:     <%=ENV['PGPORT']%>
+  template: template0
+
+test:
+  adapter: postgresql
+  encoding: utf8
+  reconnect: false
+  pool: 5
+  database: wanna_emails_test
+  username: <%=ENV['PGUSER']%>
+  password: <%=ENV['PGPASSWORD']%>
+  host:     localhost
+  port:     <%=ENV['PGPORT']%>
+  template: template0
+
+production:
+  adapter: postgresql
+  encoding: utf8
+  reconnect: false
+  pool: 5
+  database: <%=ENV['OPENSHIFT_APP_NAME']%>
+  username: <%=ENV['OPENSHIFT_POSTGRESQL_DB_USERNAME']%>
+  password: <%=ENV['OPENSHIFT_POSTGRESQL_DB_PASSWORD']%>
+  host:     <%=ENV['OPENSHIFT_POSTGRESQL_DB_HOST']%>
+  port:     <%=ENV['OPENSHIFT_POSTGRESQL_DB_PORT']%>
+  template: template0
