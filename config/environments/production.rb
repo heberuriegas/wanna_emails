@@ -79,8 +79,6 @@ WannaEmails::Application.configure do
   config.log_formatter = ::Logger::Formatter.new
 end
 
-require_relative '../../app/workers/email_worker.rb'
-
 REDIS_CONFIG = {
   url: "redis://:#{ENV['REDIS_PASSWORD']}@#{ENV['OPENSHIFT_REDIS_HOST']}:#{ENV['OPENSHIFT_REDIS_PORT']}"
 }
