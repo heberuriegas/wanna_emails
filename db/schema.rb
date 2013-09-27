@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130926183241) do
+ActiveRecord::Schema.define(version: 20130927054055) do
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 20130926183241) do
 
   create_table "pages", force: true do |t|
     t.string   "host"
-    t.string   "uri"
+    t.text     "uri"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
