@@ -2,6 +2,8 @@
   %b Name:
   = @project.name
   %br
+  = link_to 'Recollection Pages', project_recollection_pages_path(@project)
+  %br
   Recollections
   = render 'recollections/table', recollections: @project.recollections.order(id: :desc)
   %br

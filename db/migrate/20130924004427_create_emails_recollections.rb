@@ -1,4 +1,4 @@
-class CreateEmailsRecollectionsTable < ActiveRecord::Migration
+class CreateEmailsRecollections < ActiveRecord::Migration
   def change
     create_table :emails_recollections, id: false do |t|
         t.references :email

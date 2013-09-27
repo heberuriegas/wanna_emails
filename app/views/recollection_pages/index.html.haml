@@ -1,0 +1,18 @@
+%h1 Listing Recollection PAges
+
+%table
+  %tr
+    %th Recollection
+    %th Host
+    %th Uri
+    %th Number of Emails
+
+  - @recollection_pages.each do |recollection_page|
+    %tr
+      %td= link_to recollection_page.recollection.name, project_recollection_path(@project, recollection_page.recollection.id)
+      %td= link_to recollection_page.page.host, recollection_page.page.host
+      %td= link_to recollection_page.page.uri, recollection_page.page.uri
+      %td= recollection_page.number_of_emails
+
+%br
+= paginate @recollection_pages

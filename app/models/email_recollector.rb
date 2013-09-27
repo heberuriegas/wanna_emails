@@ -17,7 +17,7 @@ class EmailRecollector
   def initialize profile = :google, persistent = true
     @agent = Mechanize.new
     @profile = @@profiles[:google]
-    @emails = []
+    @recollections = []
     @persistent = persistent
   end
   
@@ -31,18 +31,15 @@ class EmailRecollector
       sleep lag
 
       (2..@profile[:limit_page]).each do |i|
-        break if @emails.count >= goal
-        recollect_emails_from click_number(result,i)
+        result = click_number(result,i)
+        break if @recollections.count >= goal or result.nil?
+        recollect_emails_from result
         log_page i
         sleep lag
       end
 
-      unless @emails.nil?
-        @emails.uniq!
-        @emails.sort!
-      end
-
-      @emails
+      @recollections.sort_by!{ |recollection| recollection[:email] } unless @recollections.nil?
+      @recollections
     rescue Exception => e
       Rails.logger.error e.message
       Rails.logger.error e.backtrace.join("\n")
@@ -75,10 +72,10 @@ class EmailRecollector
   def recollect_emails_from page
     begin
       recollect_emails page
-
-      get_links(page).each do |link|
+      links = get_links(page)
+      links.each do |link|
         recollect_emails get_page(link)
-      end
+      end unless links.nil?
     rescue Exception => e
       Rails.logger.error e.message
     end
@@ -88,8 +85,15 @@ class EmailRecollector
   def recollect_emails page
     begin
       if page.present? and page.respond_to? :title and page.respond_to? :body
-        @emails.concat get_emails(page.title)
-        @emails.concat get_emails(page.body)
+        emails = []
+        emails.concat get_emails(page.title)
+        emails.concat get_emails(page.body)
+
+        recollections = emails.map do |email|
+          { email: email, host: page.uri.host, uri: page.uri.to_s }
+        end
+
+        @recollections.concat recollections
       end
     rescue Exception => e
       Rails.logger.error e.message
@@ -127,14 +131,9 @@ class EmailRecollector
     end
   end
 
-  # See how many emails didn't be saved
-  def fails
-    @emails.select{ |email| email.new_record? }
-  end
-
   # Just for log
   def log_page i
-    Rails.logger.info "Page #{i} collected, you have #{@emails.size} emails ..."
+    Rails.logger.info "Page #{i} collected, you have #{@recollections.size} emails ..."
   end
 
 end

@@ -2,6 +2,8 @@ class Recollection < ActiveRecord::Base
   belongs_to :user
   belongs_to :project
   has_and_belongs_to_many :emails
+  has_many :recollection_pages
+  has_many :pages, through: :recollection_pages
 
   validates :name, presence: true
   validates :date, presence: true
@@ -101,7 +103,7 @@ class Recollection < ActiveRecord::Base
       end
     end
 
-    "#{result.join(' or ')}"
+    "#{result.join(' OR ')}"
   end
 
   def search_query
@@ -110,10 +112,20 @@ class Recollection < ActiveRecord::Base
     "(#{self.search}) AND (#{email_providers}) AND (\"#{address}\")"
   end
 
-  def save_emails emails
+  def save_emails recollections
+    emails = recollections.map{ |recollection| recollection[:email] }
+
     emails.each_slice(1000).to_a.each do |emails|
-      emails_created = Email.create(emails.map{ |email| { address: email } })
+      emails_created = Email.create(emails.map{ |address| { address: address } })
       self.emails << emails_created.select{ |email| email.persisted? }
+    end
+  end
+
+  def save_pages recollections
+    recollections.group_by { |recollection| recollection[:uri] }.each do |uri,recollection|
+      page = Page.where(host: recollection[0][:host], uri: uri).first_or_create
+      page_recollection = RecollectionPage.where(recollection: self, page: page).first_or_create
+      page_recollection.update_attribute :number_of_emails, recollection.count
     end
   end
 
@@ -121,8 +133,12 @@ class Recollection < ActiveRecord::Base
     transaction { self.start_progress }
     begin
       email_recollector = EmailRecollector.new
-      emails = email_recollector.search(self.search_query, self.goal)
-      save_emails emails
+      recollections = email_recollector.search(self.search_query, self.goal)
+
+      unless recollections.nil? || recollections.empty?
+        save_emails recollections
+        save_pages recollections
+      end
     rescue Exception => e
       self.failure
       Rails.logger.error e.message

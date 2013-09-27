@@ -1,0 +1,9 @@
+= simple_form_for(@page) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :host
+    = f.input :uri
+
+  .form-actions
+    = f.button :submit

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130924004427) do
+ActiveRecord::Schema.define(version: 20130926183241) do
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -40,11 +40,37 @@ ActiveRecord::Schema.define(version: 20130924004427) do
   add_index "emails_recollections", ["email_id", "recollection_id"], name: "index_emails_recollections_on_email_id_and_recollection_id", unique: true, using: :btree
   add_index "emails_recollections", ["email_id"], name: "index_emails_recollections_on_email_id", using: :btree
 
+  create_table "pages", force: true do |t|
+    t.string   "host"
+    t.string   "uri"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "pages_recollections", force: true do |t|
+    t.integer "page_id"
+    t.integer "recollection_id"
+    t.integer "number_of_emails"
+  end
+
+  add_index "pages_recollections", ["page_id", "recollection_id"], name: "index_pages_recollections_on_page_id_and_recollection_id", unique: true, using: :btree
+
   create_table "projects", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "recollection_pages", force: true do |t|
+    t.integer  "recollection_id"
+    t.integer  "page_id"
+    t.integer  "number_of_emails"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "recollection_pages", ["page_id"], name: "index_recollection_pages_on_page_id", using: :btree
+  add_index "recollection_pages", ["recollection_id"], name: "index_recollection_pages_on_recollection_id", using: :btree
 
   create_table "recollections", force: true do |t|
     t.string   "name"
