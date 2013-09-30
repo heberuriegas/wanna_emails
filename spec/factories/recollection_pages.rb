@@ -4,6 +4,6 @@ FactoryGirl.define do
   factory :recollection_page do
     recollection nil
     page nil
-    number_of_emails 1
+    emails_count 1
   end
 end

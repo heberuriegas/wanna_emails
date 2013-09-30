@@ -1,5 +1,6 @@
 class Email < ActiveRecord::Base
-  has_and_belongs_to_many :recollections
+  has_many :emails_recollection_pages, class_name: 'EmailsRecollectionPages'
+  has_many :emails, through: :emails_recollection_pages
 
   validates :address, presence: true, uniqueness: true
   validates :address, :email_format => {:message => 'is not looking good'}

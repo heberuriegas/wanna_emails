@@ -3,6 +3,10 @@ require "spec_helper"
 describe PagesController do
   describe "routing" do
 
+    before(:each) do
+      pending
+    end
+
     it "routes to #index" do
       get("/pages").should route_to("pages#index")
     end

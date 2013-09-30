@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130927054055) do
+ActiveRecord::Schema.define(version: 20130929164017) do
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -32,13 +32,14 @@ ActiveRecord::Schema.define(version: 20130927054055) do
 
   add_index "emails", ["address"], name: "index_emails_on_address", using: :btree
 
-  create_table "emails_recollections", id: false, force: true do |t|
+  create_table "emails_recollection_pages", primary_key: "[:email_id, :recollection_page_id]", force: true do |t|
     t.integer "email_id"
-    t.integer "recollection_id"
+    t.integer "recollection_page_id"
   end
 
-  add_index "emails_recollections", ["email_id", "recollection_id"], name: "index_emails_recollections_on_email_id_and_recollection_id", unique: true, using: :btree
-  add_index "emails_recollections", ["email_id"], name: "index_emails_recollections_on_email_id", using: :btree
+  add_index "emails_recollection_pages", ["email_id", "recollection_page_id"], name: "index_emails_recollection_pages_unique", unique: true, using: :btree
+  add_index "emails_recollection_pages", ["email_id"], name: "index_emails_recollection_pages_on_email_id", using: :btree
+  add_index "emails_recollection_pages", ["recollection_page_id"], name: "index_emails_recollection_pages_on_recollection_page_id", using: :btree
 
   create_table "pages", force: true do |t|
     t.string   "host"
@@ -64,7 +65,7 @@ ActiveRecord::Schema.define(version: 20130927054055) do
   create_table "recollection_pages", force: true do |t|
     t.integer  "recollection_id"
     t.integer  "page_id"
-    t.integer  "number_of_emails"
+    t.integer  "emails_recollection_pages_count", default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

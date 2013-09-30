@@ -11,16 +11,11 @@ development:
   template: template0
 
 test:
-  adapter: postgresql
+  adapter: sqlite3
   encoding: utf8
   reconnect: false
   pool: 15
   database: wanna_emails_test
-  username: <%=ENV['PGUSER']%>
-  password: <%=ENV['PGPASSWORD']%>
-  host:     localhost
-  port:     <%=ENV['PGPORT']%>
-  template: template0
 
 production:
   adapter: postgresql

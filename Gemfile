@@ -48,6 +48,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails'
   gem 'thin'
+  gem 'faker'
 end
 group :production do
   gem 'unicorn'
@@ -55,5 +56,6 @@ end
 group :test do
   gem 'database_cleaner', '1.0.1'
   gem 'email_spec'
+  gem 'sqlite3'
 end
 

@@ -6,7 +6,7 @@ class PagesController < ApplicationController
   # GET /pages
   # GET /pages.json
   def index
-    @pages = Page.includes(:recollections).where('recollections.project_id' => @project.id).order('recollection_pages.number_of_emails desc').page(params[:page])
+    @pages = Page.includes(:recollections).where('recollections.project_id' => @project.id).order('recollection_pages.emails_recollection_pages_count desc').page(params[:page])
   end
 
   # GET /pages/1

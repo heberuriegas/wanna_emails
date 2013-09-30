@@ -1,6 +1,7 @@
 class RecollectionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_project
+  before_action :set_default_create_params, only: [:create]
   before_action :set_recollection, only: [:show, :edit, :update, :destroy]
 
   # GET /recollections
@@ -29,7 +30,6 @@ class RecollectionsController < ApplicationController
   # POST /recollections.json
   def create
     @recollection = Recollection.new(recollection_params)
-
     respond_to do |format|
       if @recollection.save
         format.html { redirect_to project_recollection_path(@project,@recollection), notice: 'Recollection was successfully created.' }
@@ -75,11 +75,19 @@ class RecollectionsController < ApplicationController
       @recollection = Recollection.find(params[:id])
     end
 
+    def default_params
+      @default_params ||= {}
+      @default_params.merge!(project_id: @project.id) unless @recollection.present? and @recollection.project.present?
+      @default_params
+    end
+
+    def set_default_create_params
+      @default_params ||= {}
+      @default_params.merge! user_id: current_user.id, date: Time.now
+    end
+
     # Never trust parameters from the scary internet, only allow the white list through.
     def recollection_params
-      default_params = { user_id: current_user.id, date: Time.now }
-      default_params.merge!(project_id: @project.id) unless @recollection.present? and @recollection.project.present?
-
       params.require(:recollection).permit(:name, :address, :latitude, :longitude, :goal, :search).merge!(default_params)
     end
 end

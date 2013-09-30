@@ -2,11 +2,12 @@
 
 FactoryGirl.define do
   factory :recollection do
-    name "MyString"
+    name "Monterrey, Nuevo León"
     date "2013-09-21 18:40:15"
-    latitude 1.5
-    longitude 1.5
+    latitude 100.0
+    longitude -100.0
     goal 1
-    user nil
+    association :user
+    association :project
   end
 end

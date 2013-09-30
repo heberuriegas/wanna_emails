@@ -12,7 +12,7 @@
       %td= link_to recollection_page.recollection.name, project_recollection_path(@project, recollection_page.recollection.id)
       %td= link_to recollection_page.page.host, recollection_page.page.host
       %td= link_to recollection_page.page.uri, recollection_page.page.uri
-      %td= recollection_page.number_of_emails
+      %td= recollection_page.emails_count
 
 %br
 = paginate @recollection_pages

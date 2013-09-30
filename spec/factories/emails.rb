@@ -2,6 +2,6 @@
 
 FactoryGirl.define do
   factory :email do
-    address "MyString"
+    address { generate :email }
   end
 end

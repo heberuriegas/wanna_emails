@@ -1,7 +1,7 @@
 class Recollection < ActiveRecord::Base
   belongs_to :user
   belongs_to :project
-  has_and_belongs_to_many :emails
+  
   has_many :recollection_pages
   has_many :pages, through: :recollection_pages
 
@@ -83,7 +83,10 @@ class Recollection < ActiveRecord::Base
   end
 
   def reach
-    "#{self.emails.count} emails - #{((self.emails.count.to_f/self.goal.to_f)*100).round(2)}% of the total" if self.emails.present?
+    if self.recollection_pages.present?
+      emails = self.recollection_pages.sum('emails_recollection_pages_count')
+      "#{emails} emails - #{((emails.to_f/self.goal.to_f)*100).round(2)}% of the total"
+    end
   end
 
   def log_failure recollection, transition
@@ -112,20 +115,21 @@ class Recollection < ActiveRecord::Base
     "(#{self.search}) AND (#{email_providers}) AND (\"#{address}\")"
   end
 
-  def save_emails recollections
-    emails = recollections.map{ |recollection| recollection[:email] }
+  def save_emails_and_pages recollections
+    recollections.group_by { |recollection| recollection[:uri] }.each do |uri,recollections|
 
-    emails.each_slice(1000).to_a.each do |emails|
-      emails_created = Email.create(emails.map{ |address| { address: address } })
-      self.emails << emails_created.select{ |email| email.persisted? }
-    end
-  end
+      page = Page.where(host: recollections[0][:host], uri: uri).first_or_create
 
-  def save_pages recollections
-    recollections.group_by { |recollection| recollection[:uri] }.each do |uri,recollection|
-      page = Page.where(host: recollection[0][:host], uri: uri).first_or_create
-      page_recollection = RecollectionPage.where(recollection: self, page: page).first_or_create
-      page_recollection.update_attribute :number_of_emails, recollection.count
+      recollection_page = RecollectionPage.where(recollection: self, page: page).first_or_create
+
+      recollections.each_slice(500) do |recollections|
+        transaction do
+          recollections.each do |recollection|
+            email = Email.where(address: recollection[:email]).first_or_create
+            EmailsRecollectionPages.where(recollection_page: recollection_page, email: email).first_or_create
+          end
+        end
+      end
     end
   end
 
@@ -135,10 +139,7 @@ class Recollection < ActiveRecord::Base
       email_recollector = EmailRecollector.new
       recollections = email_recollector.search(self.search_query, self.goal)
 
-      unless recollections.nil? || recollections.empty?
-        save_emails recollections
-        save_pages recollections
-      end
+      save_emails_and_pages recollections unless recollections.nil? || recollections.empty?
     rescue Exception => e
       self.failure
       Rails.logger.error e.message

@@ -2,5 +2,10 @@ class RecollectionPage < ActiveRecord::Base
   belongs_to :recollection
   belongs_to :page
 
-  validates :number_of_emails, presence: true, numericality: { greater_than: 0 }
+  has_many :emails_recollection_pages, class_name: 'EmailsRecollectionPages'
+  has_many :emails, through: :emails_recollection_pages 
+
+  validates :emails_count, presence: true, numericality: true
+
+  alias_attribute :emails_count, :emails_recollection_pages_count
 end

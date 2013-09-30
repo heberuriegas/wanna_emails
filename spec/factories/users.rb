@@ -2,10 +2,10 @@
 
 FactoryGirl.define do
   factory :user do
-    name 'Test User'
-    email 'example@example.com'
-    password 'changeme'
-    password_confirmation 'changeme'
+    name { generate(:full_name) }
+    email { generate(:email) }
+    password { @password = generate(:password) }
+    password_confirmation { @password }
     # required if the Devise Confirmable module is used
     # confirmed_at Time.now
   end

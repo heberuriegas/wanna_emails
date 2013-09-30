@@ -3,7 +3,7 @@ class RecollectionPagesController < ApplicationController
   before_action :set_project
 
   def index
-    @recollection_pages = RecollectionPage.joins(:recollection).includes(:page).where('recollections.project_id' => @project.id).order(number_of_emails: :desc).page(params[:page])
+    @recollection_pages = RecollectionPage.joins(:recollection).includes(:page).where('recollections.project_id' => @project.id).order(emails_recollection_pages_count: :desc).page(params[:page])
   end
 
   private
