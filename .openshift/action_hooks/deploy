@@ -16,7 +16,4 @@ if [ -f "${SIDEKIQ_PIDFILE}" ]; then
   fi
 fi
 
-bundle exec rake db:migrate
-bundle exec rake db:seed
-
 popd
