@@ -58,4 +58,3 @@ group :test do
   gem 'email_spec'
   gem 'sqlite3'
 end
-
