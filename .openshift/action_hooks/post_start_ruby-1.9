@@ -4,7 +4,10 @@ set -e
 
 pushd ${OPENSHIFT_REPO_DIR} > /dev/null
 
+echo "Starting DB Migrate..."
 bundle exec rake db:migrate
+
+echo "Starting DB Seed..."
 bundle exec rake db:seed
 
 echo "Starting sidekiq..."
