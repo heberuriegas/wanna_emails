@@ -1,0 +1,7 @@
+%h1 Editing message
+
+= render 'form'
+
+= link_to 'Show', project_message_path(@project,@message)
+\|
+= link_to 'Back', project_messages_path(@project)

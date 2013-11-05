@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130929164017) do
+ActiveRecord::Schema.define(version: 20131105210408) do
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -41,11 +41,22 @@ ActiveRecord::Schema.define(version: 20130929164017) do
   add_index "emails_recollection_pages", ["email_id"], name: "index_emails_recollection_pages_on_email_id", using: :btree
   add_index "emails_recollection_pages", ["recollection_page_id"], name: "index_emails_recollection_pages_on_recollection_page_id", using: :btree
 
+  create_table "messages", force: true do |t|
+    t.string   "subject"
+    t.text     "text"
+    t.integer  "project_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "messages", ["project_id"], name: "index_messages_on_project_id", using: :btree
+
   create_table "pages", force: true do |t|
     t.string   "host"
     t.text     "uri"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "posted",     default: false
   end
 
   create_table "pages_recollections", force: true do |t|
@@ -55,6 +66,15 @@ ActiveRecord::Schema.define(version: 20130929164017) do
   end
 
   add_index "pages_recollections", ["page_id", "recollection_id"], name: "index_pages_recollections_on_page_id_and_recollection_id", unique: true, using: :btree
+
+  create_table "phones", force: true do |t|
+    t.string   "number"
+    t.integer  "recollection_page_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "phones", ["recollection_page_id"], name: "index_phones_on_recollection_page_id", using: :btree
 
   create_table "projects", force: true do |t|
     t.string   "name"
@@ -90,6 +110,8 @@ ActiveRecord::Schema.define(version: 20130929164017) do
     t.datetime "starts_at"
     t.datetime "ends_at"
     t.text     "report"
+    t.string   "country_code"
+    t.boolean  "search_by_city", default: false
   end
 
   add_index "recollections", ["project_id"], name: "index_recollections_on_project_id", using: :btree
@@ -105,6 +127,33 @@ ActiveRecord::Schema.define(version: 20130929164017) do
 
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
+
+  create_table "sender_entities", force: true do |t|
+    t.string   "name"
+    t.string   "address"
+    t.integer  "port"
+    t.string   "domain"
+    t.string   "user_name"
+    t.string   "password"
+    t.string   "authentication"
+    t.boolean  "enable_starttls_auto"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "senders", force: true do |t|
+    t.string   "name"
+    t.integer  "sender_entity_id"
+    t.string   "user_name"
+    t.string   "password"
+    t.string   "language"
+    t.integer  "mail_sent",        default: 0
+    t.boolean  "blocked",          default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "senders", ["sender_entity_id"], name: "index_senders_on_sender_entity_id", using: :btree
 
   create_table "tags", force: true do |t|
     t.string   "title"

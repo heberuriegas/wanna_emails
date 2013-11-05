@@ -3,7 +3,9 @@ class RecollectionPage < ActiveRecord::Base
   belongs_to :page
 
   has_many :emails_recollection_pages, class_name: 'EmailsRecollectionPages'
-  has_many :emails, through: :emails_recollection_pages 
+  has_many :emails, through: :emails_recollection_pages, dependent: :destroy
+
+  has_many :phones, dependent: :destroy
 
   validates :emails_count, presence: true, numericality: true
 

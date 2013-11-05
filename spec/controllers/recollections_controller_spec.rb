@@ -44,18 +44,18 @@ describe RecollectionsController do
     describe "with valid params" do
       it "creates a new Recollection" do
         expect {
-          post :create, {project_id: project.id,:recollection => valid_attributes}
+          post :create, {project_id: project.id, :recollection => valid_attributes}
         }.to change(Recollection, :count).by(1)
       end
 
       it "assigns a newly created recollection as @recollection" do
-        post :create, {project_id: project.id,:recollection => valid_attributes}
+        post :create, {project_id: project.id, :recollection => valid_attributes}
         assigns(:recollection).should be_a(Recollection)
         assigns(:recollection).should be_persisted
       end
 
       it "redirects to the created recollection" do
-        post :create, {project_id: project.id,:recollection => valid_attributes}
+        post :create, {project_id: project.id, :recollection => valid_attributes}
         response.should redirect_to(project_recollection_url(project, Recollection.last))
       end
     end

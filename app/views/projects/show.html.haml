@@ -4,6 +4,8 @@
   %br
   = link_to 'Recollection Pages', project_recollection_pages_path(@project)
   %br
+  = link_to 'Messages', project_messages_path(@project)
+  %br
   Recollections
   = render 'recollections/table', recollections: @project.recollections.order(id: :desc)
   %br

@@ -8,6 +8,9 @@
   %b Address:
   = @recollection.address
 %p
+  %b Country Code:
+  = @recollection.country_code
+%p
   %b Latitude:
   = @recollection.latitude
 %p
@@ -33,7 +36,7 @@
   = distance_of_time_in_words(@recollection.starts_at, @recollection.ends_at) if @recollection.starts_at.present? && @recollection.ends_at.present?
 %p
   %b User:
-  = @recollection.user.email
+  = @recollection.user.try(:email)
 %p
   %b Report:
   = @recollection.report

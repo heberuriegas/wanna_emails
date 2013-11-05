@@ -1,5 +1,6 @@
 = link_to "Wanna Emails", root_path, :class => 'brand'
 %ul.nav
+  %li= link_to 'Senders', senders_path
   %li= link_to 'Emails', emails_path
   - if user_signed_in?
     %li

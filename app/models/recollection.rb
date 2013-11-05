@@ -3,17 +3,21 @@ class Recollection < ActiveRecord::Base
   belongs_to :project
   
   has_many :recollection_pages
-  has_many :pages, through: :recollection_pages
+  has_many :pages, through: :recollection_pages, dependent: :destroy
 
   validates :name, presence: true
-  validates :date, presence: true
-  validates :latitude, numericality: true
-  validates :longitude, numericality: true
-  validates :goal, presence: true, numericality: { greater_than: 0, less_than: 100000 }
+  validates :date, presence: true, if: "user.present?"
+  validates :latitude, numericality: true, if: "user.present?"
+  validates :longitude, numericality: true, if: "user.present?"
+  validates :goal, presence: true, numericality: { greater_than: 0, less_than: 100000 }, if: "user.present?"
 
-  validates_presence_of :user
+  after_validation :reverse_geocode
 
-  acts_as_gmappable check_process: false
+  reverse_geocoded_by :latitude, :longitude do |recollection,results|
+    if geo = results.first
+      recollection.country_code = geo.country_code
+    end
+  end
 
   @@email_providers = [:gmail, :outlook, :hotmail, :live, :yahoo]
   @@sufix_domains = [:com]
@@ -110,9 +114,14 @@ class Recollection < ActiveRecord::Base
   end
 
   def search_query
-    address = self.address.split(',').reverse
-    address = address.count >= 2 ? address[2] : address[address.count]
-    "(#{self.search}) AND (#{email_providers}) AND (\"#{address}\")"
+    result = "(#{self.search}) AND (#{email_providers})"
+
+    if self.search_by_city == true
+      address = self.address.split(',').reverse
+      address = address.count >= 2 ? address[2] : address[address.count]
+      result.concat " AND (\"#{address}\")"
+    end
+    result
   end
 
   def save_emails_and_pages recollections
@@ -137,7 +146,7 @@ class Recollection < ActiveRecord::Base
     transaction { self.start_progress }
     begin
       email_recollector = EmailRecollector.new
-      recollections = email_recollector.search(self.search_query, self.goal)
+      recollections = email_recollector.search(self.search_query, self.country_code, self.goal)
 
       save_emails_and_pages recollections unless recollections.nil? || recollections.empty?
     rescue Exception => e

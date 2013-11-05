@@ -1,0 +1,9 @@
+= simple_form_for @message, url: project_message_path(@project,@message)  do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :subject, input_html: { style: 'width: 95%;' }
+    = f.input :text, input_html: { style: 'width: 95%; height: 200px;' }
+
+  .form-actions
+    = f.button :submit

@@ -1,0 +1,26 @@
+%h1 Listing messages
+%h2= @project.name
+
+%table
+  %tr
+    %th Subject
+    %th Text
+    %th
+    %th
+    %th
+
+  - @messages.each do |message|
+    %tr
+      %td= message.subject
+      %td= message.text
+      %td= link_to 'Show', project_message_path(@project,message)
+      %td= link_to 'Edit', edit_project_message_path(@project,message)
+      %td= link_to 'Destroy', project_message_path(@project,message), :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Message', new_project_message_path(@project)
+%br
+= link_to 'Back', project_path(@project)
+
+= paginate @messages

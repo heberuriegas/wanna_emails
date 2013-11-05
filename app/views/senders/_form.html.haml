@@ -1,0 +1,12 @@
+= simple_form_for(@sender) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :name
+    = f.association :sender_entity
+    = f.input :user_name
+    = f.input :password, as: :string
+    = f.input :language, collection: ['ES','EN'], as: :select
+
+  .form-actions
+    = f.button :submit

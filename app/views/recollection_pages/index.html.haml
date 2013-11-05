@@ -2,17 +2,23 @@
 
 %table
   %tr
+    %th id
     %th Recollection
     %th Host
     %th Uri
     %th Number of Emails
+    %th Destroy
 
   - @recollection_pages.each do |recollection_page|
     %tr
+      %td= recollection_page.id
       %td= link_to recollection_page.recollection.name, project_recollection_path(@project, recollection_page.recollection.id)
-      %td= link_to recollection_page.page.host, recollection_page.page.host
-      %td= link_to recollection_page.page.uri, recollection_page.page.uri
+      %td= link_to "http://#{recollection_page.page.host}", "http://#{recollection_page.page.host}", target: '_blank'
+      %td= link_to recollection_page.page.uri.length > 70 ? recollection_page.page.uri[0..70]+"..." : recollection_page.page.uri, recollection_page.page.uri, target: '_blank'
       %td= recollection_page.emails_count
+      %td= link_to 'Destroy', project_recollection_page_path(@project,recollection_page), method: :delete, :data => { :confirm => 'Are you sure?' }
 
+%br
+= link_to 'Back', project_path(@project)
 %br
 = paginate @recollection_pages

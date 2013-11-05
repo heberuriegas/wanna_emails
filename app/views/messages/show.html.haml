@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Subject:
+  = @message.subject
+%p
+  %b Text:
+  = @message.text
+%p
+  %b Project:
+  = @message.project.name
+
+= link_to 'Edit', edit_project_message_path(@project,@message)
+\|
+= link_to 'Back', project_messages_path(@project)

@@ -8,6 +8,10 @@ class RecollectionsController < ApplicationController
   # GET /recollections.json
   def index
     @recollections = Recollection.where(project_id: params[:project_id]).order(date: :desc).page(params[:page])
+    @hash = Gmaps4rails.build_markers(@recollections) do |recollection, marker|
+      marker.lat recollection.latitude
+      marker.lng recollection.longitude
+    end
   end
 
   # GET /recollections/1
@@ -88,6 +92,6 @@ class RecollectionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def recollection_params
-      params.require(:recollection).permit(:name, :address, :latitude, :longitude, :goal, :search).merge!(default_params)
+      params.require(:recollection).permit(:name, :address, :search_by_city, :latitude, :longitude, :goal, :search).merge!(default_params)
     end
 end

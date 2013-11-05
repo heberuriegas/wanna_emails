@@ -1,0 +1,27 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @sender.name
+%p
+  %b Sender entity:
+  = @sender.sender_entity.try(:name)
+%p
+  %b User name:
+  = @sender.user_name
+%p
+  %b Password:
+  = @sender.password
+%p
+  %b Language:
+  = @sender.language
+%p
+  %b Mail sent:
+  = @sender.mail_sent
+%p
+  %b Blocked:
+  = @sender.blocked
+
+= link_to 'Edit', edit_sender_path(@sender)
+\|
+= link_to 'Back', senders_path

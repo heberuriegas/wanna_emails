@@ -11,6 +11,10 @@ class ProjectsController < ApplicationController
   # GET /projects/1
   # GET /projects/1.json
   def show
+    @hash = Gmaps4rails.build_markers(@project.recollections) do |recollection, marker|
+      marker.lat recollection.latitude.to_f
+      marker.lng recollection.longitude.to_f
+    end
   end
 
   # GET /projects/new

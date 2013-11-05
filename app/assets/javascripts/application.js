@@ -14,5 +14,7 @@
 //= require jquery_ujs
 //= require jquery.ui.all
 //= require bootstrap
+//= require underscore
+//= require gmaps/google
 //= require gmaps.autocomplete
 //= require_tree .

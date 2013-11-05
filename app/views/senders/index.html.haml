@@ -1,0 +1,33 @@
+%h1 Listing senders
+
+%table
+  %tr
+    %th Name
+    %th Sender entity
+    %th User name
+    %th Password
+    %th Mail sent
+    %th Blocked
+    %th Language
+    %th Updated At
+    %th
+    %th
+    %th
+
+  - @senders.each do |sender|
+    %tr
+      %td= sender.name
+      %td= sender.sender_entity.try(:name)
+      %td= sender.user_name
+      %td= sender.password
+      %td= sender.mail_sent
+      %td= sender.blocked
+      %td= sender.language
+      %td= sender.updated_at
+      %td= link_to 'Show', sender
+      %td= link_to 'Edit', edit_sender_path(sender)
+      %td= link_to 'Destroy', sender, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Sender', new_sender_path

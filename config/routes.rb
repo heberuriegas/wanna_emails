@@ -1,4 +1,6 @@
 WannaEmails::Application.routes.draw do
+  resources :senders
+
   resources :campaigns
 
   resources :emails
@@ -6,7 +8,8 @@ WannaEmails::Application.routes.draw do
   resources :projects do
     resources :recollections
     #resources :pages
-    resources :recollection_pages, only: :index
+    resources :messages
+    resources :recollection_pages, only: [:index, :destroy]
   end
 
   root :to => "projects#index"

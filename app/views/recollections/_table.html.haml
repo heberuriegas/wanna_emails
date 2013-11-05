@@ -1,9 +1,11 @@
-= gmaps4rails(recollections.to_gmaps4rails)
+%div{ style: 'width: 800px;' }
+  #map{ style: 'width: 800px; height: 400px;' }
 %table
   %tr
     %th Name
     %th Date
     %th Address
+    %th Country Code
     %th Goal
     %th Search
     %th Status
@@ -16,7 +18,8 @@
     %tr
       %td= link_to recollection.name, project_recollection_path(@project,recollection)
       %td= recollection.date
-      %td= recollection.address      
+      %td= recollection.address
+      %td= recollection.country_code
       %td= recollection.goal
       %td= recollection.search
       %td= recollection.status
@@ -25,4 +28,10 @@
       %td= link_to 'Destroy', project_recollection_path(@project, recollection), :method => :delete, :data => { :confirm => 'Are you sure?' }
       
 - content_for :extra_js do
-  = yield :scripts
+  :javascript
+    handler = Gmaps.build('Google');
+    handler.buildMap({ provider: {}, internal: {id: 'map'}}, function(){
+      markers = handler.addMarkers(#{raw(@hash.to_json).html_safe});
+      handler.bounds.extendWith(markers);
+      handler.fitMapToBounds();
+    });

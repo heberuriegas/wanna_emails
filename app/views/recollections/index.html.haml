@@ -1,4 +1,6 @@
 %h1 Listing recollections
+= link_to 'Recollection Pages', project_recollection_pages_path(@project)
+%br
 = render 'table', recollections: @recollections
 %br
 
