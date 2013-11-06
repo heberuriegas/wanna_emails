@@ -44,7 +44,7 @@ namespace :olx do
       begin
         agent.switch_circuit if index % 3 == 0
         visit("#{args[:url]}-p-#{n}")
-        logger.info "==== Page: #{args[:url]}-p-#{n}"
+        logger.info "==== Visit Page: #{args[:url]}-p-#{n}"
         services_urls = all(:xpath, "//div[@id='itemListContent']//h3//a").map{ |a| a[:href] }
         services_urls.each do |service_url|
           begin
