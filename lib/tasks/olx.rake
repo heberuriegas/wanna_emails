@@ -1,3 +1,6 @@
+# Execute with: 
+# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+
 namespace :olx do
   desc "Generate data dummy for services"
   task :post_messages, [:project, :recollection, :url, :pages, :tor] => :environment do |t, args|
@@ -38,24 +41,31 @@ namespace :olx do
       begin
         puts "== Visit: #{args[:url]}-p-#{n}"
         visit("#{args[:url]}-p-#{n}")
-        pages = all(:xpath, "//div[@id='itemListContent']//h3//a").map{ |a| a[:href] }
-        pages.each do |page|
+        services_urls = all(:xpath, "//div[@id='itemListContent']//h3//a").map{ |a| a[:href] }
+        services_urls.each do |service_url|
           begin
             sender = Sender.where(language: 'ES').sample
-            puts "== Visit: #{page}"
-            visit(page)
+            puts "== Visit: #{service_url}"
+            visit(service_url)
 
-            recollection_page = RecollectionPage.where(recollection_id: recollection.id, page_id: Page.where(uri: page).first_or_create.id).first_or_create
-            email_recollector.recollect_emails body: body, title: title, uri: URI.parse(page)
+            recollection_page_emails = RecollectionPage.where(recollection_id: recollection.id, page_id: Page.where(uri: service_url).first_or_create.id).first_or_create
+            email_recollector.recollect_emails body: body, title: title, uri: URI.parse(service_url)
             phone_number = all(:xpath, "//li[@class='phone']//strong").map{|t| t.text}.first
-            contact_page = "#{contact_path}?b=#{current_url.split('-').last}"
-            visit contact_page
-            fill_in 'comment', with: project.messages.sample.text
-            fill_in 'name', with: sender.name
-            fill_in 'email', with: sender.email
-            # Send message
+            contact_url = "#{contact_path}?b=#{current_url.split('-').last}"
+            #contact_url = "#{contact_path}?b=561595831"
+            contact_page = Page.where(uri: contact_url).first_or_create
+            recollection_page = RecollectionPage.where(recollection_id: recollection.id, page_id: contact_page.id).first_or_create
+            unless contact_page.posted == true
+                visit contact_url
+                fill_in 'comment', with: project.messages.sample.text.gsub(':name', sender.name).gsub(':recollection_name', recollection.name).gsub(':url', service_url)
+                fill_in 'name', with: sender.name
+                fill_in 'email', with: sender.email
+                click_button('Enviar')
+                puts "===== Posted: #{contact_url}"
+                contact_page.update_attribute :posted, true
+            end
             recollection.save_emails_and_pages email_recollector.recollections
-            recollection_page.phones << Phone.where(number: phone_number) unless recollection_page.phones.pluck(:number).include?(phone_number)
+            recollection_page_emails.phones << Phone.where(number: phone_number) unless recollection_page_emails.phones.pluck(:number).include?(phone_number)
             sleep 3
           rescue Exception => e
             puts "== Error: #{e.message}"
@@ -64,7 +74,7 @@ namespace :olx do
         end
       rescue Exception => e
         puts "== Error: #{e.message}"
-        agent.switch_circuit unless args[:tor].nil?
+        agent.switch_circuit if args[:tor] == 'true'
       end
     end
   end
