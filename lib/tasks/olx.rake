@@ -2,6 +2,7 @@
 # rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 namespace :olx do
+
   desc "Generate data dummy for services"
   task :post_messages, [:project, :recollection, :url, :pages, :tor] => :environment do |t, args|
     args.with_defaults project: 'TradeGig'
@@ -9,6 +10,8 @@ namespace :olx do
     args.with_defaults url: 'http://www.olx.cl/servicios-cat-191'
     args.with_defaults pages: '1-10'
     args.with_defaults tor: nil
+
+    logger = Logger.new("log/#{args[:recollection].underscore.gsub(' ','_')}/#{DateTime.now.to_s(:number)}.log")
 
     pages = args[:pages].split('-')
 
@@ -26,7 +29,7 @@ namespace :olx do
 
     agent = TorPrivoxy::Agent.new host: ENV['TOR_HOST'], password: ENV['TOR_PASSWORD'], privoxy_port: ENV['TOR_PRIVOXY_PORT'], control_port: ENV['TOR_CONTROL_PORT'], capybara: true do |agent|
       sleep 5
-      puts "New IP is #{agent.ip}"
+      logger.info "New IP is #{agent.ip}"
     end if args[:tor] == 'true'
     
     project = Project.where(name: args[:project]).first_or_create
@@ -37,16 +40,17 @@ namespace :olx do
 
     email_recollector = EmailRecollector.new
 
-    (pages[0].to_i...pages[1].to_i).each do |n|
+    (pages[0].to_i...pages[1].to_i).each_with_index do |n,index|
       begin
-        puts "== Visit: #{args[:url]}-p-#{n}"
+        agent.switch_circuit if index % 3 == 0
         visit("#{args[:url]}-p-#{n}")
+        logger.info "Visit: #{args[:url]}-p-#{n}"
         services_urls = all(:xpath, "//div[@id='itemListContent']//h3//a").map{ |a| a[:href] }
         services_urls.each do |service_url|
           begin
             sender = Sender.where(language: 'ES').sample
-            puts "== Visit: #{service_url}"
             visit(service_url)
+            logger.info "Visit: #{service_url}"
 
             recollection_page_emails = RecollectionPage.where(recollection_id: recollection.id, page_id: Page.where(uri: service_url).first_or_create.id).first_or_create
             email_recollector.recollect_emails body: body, title: title, uri: URI.parse(service_url)
@@ -57,23 +61,24 @@ namespace :olx do
             recollection_page = RecollectionPage.where(recollection_id: recollection.id, page_id: contact_page.id).first_or_create
             unless contact_page.posted == true
                 visit contact_url
+                logger.info "Visit: #{contact_url}"
                 fill_in 'comment', with: project.messages.sample.text.gsub(':name', sender.name).gsub(':recollection_name', recollection.name).gsub(':url', service_url)
                 fill_in 'name', with: sender.name
                 fill_in 'email', with: sender.email
                 click_button('Enviar')
-                puts "===== Posted: #{contact_url}"
+                logger.info "== Posted: #{contact_url}"
                 contact_page.update_attribute :posted, true
             end
             recollection.save_emails_and_pages email_recollector.recollections
             recollection_page_emails.phones << Phone.where(number: phone_number) unless recollection_page_emails.phones.pluck(:number).include?(phone_number)
             sleep 3
           rescue Exception => e
-            puts "== Error: #{e.message}"
+            logger.error "== Error: #{e.message}"
             agent.switch_circuit if args[:tor] == 'true'
           end    
         end
       rescue Exception => e
-        puts "== Error: #{e.message}"
+        logger.error "== Error: #{e.message}"
         agent.switch_circuit if args[:tor] == 'true'
       end
     end
