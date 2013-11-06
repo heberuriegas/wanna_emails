@@ -42,7 +42,7 @@ namespace :olx do
 
     (pages[0].to_i...pages[1].to_i).each_with_index do |n,index|
       begin
-        agent.switch_circuit if index % 3 == 0
+        agent.switch_circuit if index % 3 == 3
         visit("#{args[:url]}-p-#{n}")
         logger.info "==== Visit Page: #{args[:url]}-p-#{n}"
         services_urls = all(:xpath, "//div[@id='itemListContent']//h3//a").map{ |a| a[:href] }
