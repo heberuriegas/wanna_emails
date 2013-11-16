@@ -48,5 +48,6 @@ senders = [
 ]
 
 senders.each do |sender|
-  SenderEntity.where(sender).first_or_create
+  sender_entity = SenderEntity.where(name: sender[:name]).first_or_create
+  sender_entity.update_attributes sender
 end
