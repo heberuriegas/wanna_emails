@@ -38,7 +38,7 @@ senders = [
   },
   {
     name: "Yahoo Chile",
-    address: 'smtp.mail.yahoo.cl',
+    address: 'smtp.mail.yahoo.com',
     port: 587,
     domain: 'yahoo.cl',
     authentication: 'plain',

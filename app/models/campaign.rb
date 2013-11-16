@@ -129,9 +129,10 @@ class Campaign < ActiveRecord::Base
       senders = Sender.availables(language: self.project.language)
       messages = self.project.messages
 
-      #self.emails[0...Sender.availables_count(language: self.project.language)].each do |email|
-      self.emails[0...5].each do |email|
+      self.emails[0...Sender.availables_count(language: self.project.language)].each do |email|
+      #self.emails[0...5].each do |email|
         GeneralMailer.delay.general(self.id, senders.sample.id, email.id, messages.sample.id)
+        #GeneralMailer.general(self.id, senders.sample.id, email.id, messages.sample.id).deliver!
       end
 
     rescue Exception => e
