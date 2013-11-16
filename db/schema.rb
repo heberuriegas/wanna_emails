@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131105210408) do
+ActiveRecord::Schema.define(version: 20131116194333) do
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -19,15 +19,27 @@ ActiveRecord::Schema.define(version: 20131105210408) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "starts_at"
+    t.datetime "ends_at"
+    t.integer  "state"
+    t.text     "report"
   end
 
   add_index "campaigns", ["project_id"], name: "index_campaigns_on_project_id", using: :btree
   add_index "campaigns", ["user_id"], name: "index_campaigns_on_user_id", using: :btree
 
+  create_table "campaigns_recollections", primary_key: "[:campaign_id, :recollection_id]", force: true do |t|
+    t.integer "recollection_id"
+    t.integer "campaign_id"
+  end
+
+  add_index "campaigns_recollections", ["campaign_id", "recollection_id"], name: "index_campaigns_recollections", unique: true, using: :btree
+
   create_table "emails", force: true do |t|
     t.string   "address"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.date     "last_sent_at"
   end
 
   add_index "emails", ["address"], name: "index_emails_on_address", using: :btree
@@ -80,6 +92,7 @@ ActiveRecord::Schema.define(version: 20131105210408) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "language"
   end
 
   create_table "recollection_pages", force: true do |t|
@@ -112,6 +125,7 @@ ActiveRecord::Schema.define(version: 20131105210408) do
     t.text     "report"
     t.string   "country_code"
     t.boolean  "search_by_city", default: false
+    t.boolean  "unique_pages",   default: false
   end
 
   add_index "recollections", ["project_id"], name: "index_recollections_on_project_id", using: :btree
@@ -139,12 +153,13 @@ ActiveRecord::Schema.define(version: 20131105210408) do
     t.boolean  "enable_starttls_auto"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "limit",                default: 0
   end
 
   create_table "senders", force: true do |t|
     t.string   "name"
     t.integer  "sender_entity_id"
-    t.string   "user_name"
+    t.string   "email"
     t.string   "password"
     t.string   "language"
     t.integer  "mail_sent",        default: 0
@@ -154,6 +169,22 @@ ActiveRecord::Schema.define(version: 20131105210408) do
   end
 
   add_index "senders", ["sender_entity_id"], name: "index_senders_on_sender_entity_id", using: :btree
+
+  create_table "sent_emails", force: true do |t|
+    t.integer  "campaign_id"
+    t.integer  "email_id"
+    t.integer  "sender_id"
+    t.integer  "message_id"
+    t.date     "sent_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sent_emails", ["campaign_id"], name: "index_sent_emails_on_campaign_id", using: :btree
+  add_index "sent_emails", ["email_id"], name: "index_sent_emails_on_email_id", using: :btree
+  add_index "sent_emails", ["message_id"], name: "index_sent_emails_on_message_id", using: :btree
+  add_index "sent_emails", ["sender_id"], name: "index_sent_emails_on_sender_id", using: :btree
+  add_index "sent_emails", ["sent_at", "email_id", "sender_id"], name: "index_sent_emails", using: :btree
 
   create_table "tags", force: true do |t|
     t.string   "title"

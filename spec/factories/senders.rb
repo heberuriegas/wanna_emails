@@ -2,12 +2,12 @@
 
 FactoryGirl.define do
   factory :sender do
-    name "MyString"
-    sender_entity nil
-    user_name "MyString"
-    password "MyString"
-    language "MyString"
-    mail_sent 1
-    blocked false
+    name { generate :full_name }
+    association :sender_entity
+    email { generate :email }
+    password { generate :password }
+    language { generate :language }
+    mail_sent { generate :random_number }
+    blocked { generate :boolean }
   end
 end

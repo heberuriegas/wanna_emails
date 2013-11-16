@@ -1,12 +1,11 @@
 WannaEmails::Application.routes.draw do
   resources :senders
 
-  resources :campaigns
-
   resources :emails
 
   resources :projects do
     resources :recollections
+    resources :campaigns
     #resources :pages
     resources :messages
     resources :recollection_pages, only: [:index, :destroy]

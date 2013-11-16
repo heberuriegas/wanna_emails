@@ -87,7 +87,7 @@ class RecollectionsController < ApplicationController
 
     def set_default_create_params
       @default_params ||= {}
-      @default_params.merge! user_id: current_user.id, date: Time.now
+      @default_params.merge! user_id: current_user.id, date: DateTime.now
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -3,5 +3,6 @@
 FactoryGirl.define do
   factory :email do
     address { generate :email }
+    last_sent_at { generate :date }
   end
 end

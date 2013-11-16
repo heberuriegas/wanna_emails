@@ -4,7 +4,7 @@
   %tr
     %th Name
     %th Sender entity
-    %th User name
+    %th Email
     %th Password
     %th Mail sent
     %th Blocked
@@ -18,7 +18,7 @@
     %tr
       %td= sender.name
       %td= sender.sender_entity.try(:name)
-      %td= sender.user_name
+      %td= sender.email
       %td= sender.password
       %td= sender.mail_sent
       %td= sender.blocked

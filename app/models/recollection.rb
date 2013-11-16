@@ -100,6 +100,31 @@ class Recollection < ActiveRecord::Base
     recollection.failure
   end
 
+  def emails
+    #Email.includes(:recollection_pages).where('recollection_pages.recollection_id = ?',self.id).references(:recollection_pages)
+    Email.joins(:recollection_pages).where('recollection_pages.recollection_id = ?',self.id)
+  end
+
+  def emails_count
+    #Email.includes(:recollection_pages).where('recollection_pages.recollection_id = ?',self.id).references(:recollection_pages)
+    Email.joins(:recollection_pages).select('count(*) as count').where('recollection_pages.recollection_id = ?',self.id).count
+  end
+
+  def emails_available days = 0
+    Email
+      .joins(:recollection_pages)
+      .where('recollection_pages.recollection_id = ?',self.id)
+      .where("TIMESTAMP '#{DateTime.now.strftime('%Y-%m-%d')}' - last_sent_at >= INTERVAL '#{days} days' OR last_sent_at is NULL")
+  end
+
+  def emails_available_count days = 0
+    Email
+      .joins(:recollection_pages)
+      .select('count(*) as count')
+      .where('recollection_pages.recollection_id = ?',self.id)
+      .where("TIMESTAMP '#{DateTime.now.strftime('%Y-%m-%d')}' - last_sent_at >= INTERVAL '#{days} days' OR last_sent_at is NULL").count
+  end
+
   def email_providers options = {}
     options.reverse_merge! another_providers: [], another_domains: []
 

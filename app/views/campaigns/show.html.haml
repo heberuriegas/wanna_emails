@@ -5,11 +5,35 @@
   = @campaign.name
 %p
   %b Project:
-  = @campaign.project
+  = @campaign.project.try(:name)
 %p
   %b User:
-  = @campaign.user
+  = @campaign.user.try(:email)
+%p
+  %b Recollections:
+  %ul
+    - @campaign.recollections.each do |recollection|
+      %li= recollection.name
+%p
+  %b Status:
+  = @campaign.status
+%p
+  %b Time:
+  = distance_of_time_in_words(@campaign.starts_at, @campaign.ends_at) if @campaign.starts_at.present? && @campaign.ends_at.present?
+%p
+  %b Total Emails:
+  = @campaign.emails_count
+%p
+  %b Emails Available:
+  = @campaign.emails_available_count
+%p
+  %b Report:
+  = @campaign.report
+- if @campaign.state_name == :waiting
+  = link_to 'Start', project_campaign_path(@project, @campaign, { start: true })
+- if @campaign.state_name == :failed
+  = link_to 'Try Again', project_campaign_path(@project, @campaign, { try_again: true })
 
-= link_to 'Edit', edit_campaign_path(@campaign)
+= link_to 'Edit', edit_project_campaign_path(@project,@campaign)
 \|
-= link_to 'Back', campaigns_path
+= link_to 'Back', project_campaigns_path(@project)

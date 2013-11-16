@@ -27,4 +27,7 @@ FactoryGirl.define do
 
   sequence(:domain) { "http://#{Faker::Internet.domain_name}" }
   sequence(:uri) { Faker::Internet.url }
+  sequence(:language) { ['ES','EN'].sample }
+
+  sequence(:date) { DateTime.now }
 end

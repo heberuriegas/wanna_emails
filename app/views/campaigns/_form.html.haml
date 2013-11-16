@@ -1,10 +1,9 @@
-= simple_form_for(@campaign) do |f|
+= simple_form_for @campaign, url: project_campaign_path(@project,@campaign) do |f|
   = f.error_notification
 
   .form-inputs
     = f.input :name
-    = f.association :project
-    = f.association :user
+    = f.association :recollections, collection: Recollection.where(project_id: @project.id), as: :check_boxes
 
   .form-actions
     = f.button :submit

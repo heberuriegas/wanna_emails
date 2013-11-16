@@ -69,6 +69,6 @@ class SendersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sender_params
-      params.require(:sender).permit(:name, :sender_entity_id, :user_name, :password, :language, :mail_sent, :blocked)
+      params.require(:sender).permit(:name, :sender_entity_id, :email, :password, :language, :mail_sent, :blocked)
     end
 end

@@ -24,15 +24,26 @@ senders = [
     port: 587,
     domain: 'gmail.com',
     authentication: 'plain',
-    enable_starttls_auto: true
+    enable_starttls_auto: true,
+    limit: 500
   },
   {
     name: "Yahoo",
     address: 'smtp.mail.yahoo.com',
-    port: 465,
+    port: 587,
     domain: 'yahoo.com',
     authentication: 'plain',
-    enable_starttls_auto: true
+    enable_starttls_auto: true,
+    limit: 500
+  },
+  {
+    name: "Yahoo Chile",
+    address: 'smtp.mail.yahoo.cl',
+    port: 587,
+    domain: 'yahoo.cl',
+    authentication: 'plain',
+    enable_starttls_auto: true,
+    limit: 500
   }
 ]
 

@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :phone do
-    number "MyString"
-    recollection_page nil
+    number { generate :random_number }
+    association :recollection_page
   end
 end

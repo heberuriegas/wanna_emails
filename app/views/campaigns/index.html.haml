@@ -5,6 +5,9 @@
     %th Name
     %th Project
     %th User
+    %th Recollections
+    %th Status
+    %th Time
     %th
     %th
     %th
@@ -12,12 +15,15 @@
   - @campaigns.each do |campaign|
     %tr
       %td= campaign.name
-      %td= campaign.project
-      %td= campaign.user
-      %td= link_to 'Show', campaign
-      %td= link_to 'Edit', edit_campaign_path(campaign)
-      %td= link_to 'Destroy', campaign, :method => :delete, :data => { :confirm => 'Are you sure?' }
+      %td= campaign.project.try(:name)
+      %td= campaign.user.try(:email)
+      %td= campaign.recollections.pluck(:name).join(', ')
+      %td= campaign.status
+      %td= distance_of_time_in_words(campaign.starts_at, campaign.ends_at) if campaign.starts_at.present? && campaign.ends_at.present?
+      %td= link_to 'Show', project_campaign_path(@project,campaign)
+      %td= link_to 'Edit', edit_project_campaign_path(@project,campaign)
+      %td= link_to 'Destroy', project_campaign_path(@project,campaign), :method => :delete, :data => { :confirm => 'Are you sure?' }
 
 %br
 
-= link_to 'New Campaign', new_campaign_path
+= link_to 'New Campaign', new_project_campaign_path(@project)

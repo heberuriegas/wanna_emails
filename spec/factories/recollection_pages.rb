@@ -2,8 +2,8 @@
 
 FactoryGirl.define do
   factory :recollection_page do
-    recollection nil
-    page nil
-    emails_count 1
+    association :recollection
+    association :page
+    emails_count { generate :random_number }
   end
 end

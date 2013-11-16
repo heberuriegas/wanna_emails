@@ -2,8 +2,12 @@
 
 FactoryGirl.define do
   factory :campaign do
-    name "MyString"
-    project nil
-    user nil
+    name { generate :text }
+    state 0
+    starts_at { generate :date }
+    ends_at { generate :date }
+    report { generate :words }
+    association :project
+    association :user
   end
 end

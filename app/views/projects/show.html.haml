@@ -2,6 +2,11 @@
   %b Name:
   = @project.name
   %br
+  %b Language:
+  = @project.language || 'N/A'
+  %br
+  = link_to 'Campaigns', project_campaigns_path(@project)
+  %br
   = link_to 'Recollection Pages', project_recollection_pages_path(@project)
   %br
   = link_to 'Messages', project_messages_path(@project)

@@ -2,11 +2,11 @@
 
 FactoryGirl.define do
   factory :recollection do
-    name "Monterrey, Nuevo León"
-    date "2013-09-21 18:40:15"
+    name { generate :word }
+    date { generate :date }
     latitude 100.0
     longitude -100.0
-    goal 1
+    goal { generate :random_number }
     association :user
     association :project
   end

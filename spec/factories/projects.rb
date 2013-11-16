@@ -2,6 +2,7 @@
 
 FactoryGirl.define do
   factory :project do
-    name "MyString"
+    name { generate :word }
+    language { generate :language }
   end
 end

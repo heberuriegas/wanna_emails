@@ -57,6 +57,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'thin'
   gem 'faker'
+  gem 'pry-rails'
 end
 group :production do
   gem 'unicorn'

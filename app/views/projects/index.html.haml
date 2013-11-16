@@ -3,12 +3,14 @@
 %table
   %tr
     %th Name
+    %th Language
     %th
     %th
 
   - @projects.each do |project|
     %tr
       %td= link_to project.name, project
+      %td= project.language
       %td= link_to 'Edit', edit_project_path(project)
       %td= link_to 'Destroy', project, :method => :delete, :data => { :confirm => 'Are you sure?' }
 
