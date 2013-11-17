@@ -109,7 +109,7 @@ class Recollection < ActiveRecord::Base
       .uniq{|email| email.address}
   end
 
-  def emails_available days = 1
+  def emails_available days = 30
     Email
       .joins(:recollection_pages)
       .where('recollection_pages.recollection_id = ?',self.id)
