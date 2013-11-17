@@ -8,7 +8,7 @@ namespace :quebarato do
     args.with_defaults project: 'TradeGig Santiago Posts'
     args.with_defaults recollection: 'Quebarato'
     args.with_defaults url: 'http://www.quebarato.cl/servicios.html?of=1'
-    args.with_defaults pages: '1-2'
+    args.with_defaults pages: '1-754'
     args.with_defaults tor: 'true'
 
     logger = Logger.new("log/posts/#{args[:recollection].underscore.gsub(' ','_')}.log")
@@ -22,7 +22,7 @@ namespace :quebarato do
 
     Capybara.app_host = args[:url]
     Capybara.default_wait_time = 10
-    Capybara.current_driver = :webkit
+    Capybara.current_driver = :selenium
 
     include Capybara::DSL
 
@@ -56,7 +56,7 @@ namespace :quebarato do
             recollection_page_emails = RecollectionPage.where(recollection_id: recollection.id, page_id: service_page.id).first_or_create
             email_recollector.recollect_emails body: body, title: title, uri: URI.parse(service_url)
             #phone_number = all(:xpath, "//li[@class='phone']//strong").map{|t| t.text}.first
-            
+=begin
             begin
                 contact_button = find(:xpath, "//button[@class='contatar']")
             rescue
@@ -73,9 +73,10 @@ namespace :quebarato do
                 logger.info "== Posted: #{service_url}"
                 service_page.update_attribute :posted, true
             end
+=end
             recollection.save_emails_and_pages email_recollector.recollections
             #recollection_page_emails.phones << Phone.where(number: phone_number) unless recollection_page_emails.phones.pluck(:number).include?(phone_number)
-            sleep 3
+            #sleep 3
           rescue Exception => e
             logger.error "== Error: #{e.message}"
             agent.switch_circuit if args[:tor] == 'true'

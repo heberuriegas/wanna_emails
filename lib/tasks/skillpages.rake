@@ -70,13 +70,14 @@ namespace :skillpages do
                 #phone_number = all(:xpath, "//li[@class='phone']//strong").map{|t| t.text}.first
                 recollection.save_emails_and_pages email_recollector.recollections
                 #recollection_page_emails.phones << Phone.where(number: phone_number) unless recollection_page_emails.phones.pluck(:number).include?(phone_number)
-
+=begin
                 fill_in 'Body', with: project.messages.sample.text.gsub(':name', sender.name).gsub(':recollection_name', recollection.name).gsub(':url', service_url)
                 click_button 'Send'
                 logger.info "Click: \"Send message button\" button"
                 logger.info "== Posted: #{service_url}"
                 service_page.update_attribute :posted, true
                 sleep 7
+=end
             end
           rescue Exception => e
             logger.error "== Error: #{e.message}"

@@ -41,7 +41,7 @@ namespace :adoos do
 
     (pages[0].to_i...pages[1].to_i).each_with_index do |n,index|
       begin
-        agent.switch_circuit if index % 3 == 3
+        agent.switch_circuit if index % 3 == 3 && args[:tor] == 'true'
         visit("#{args[:url]}-page#{n}")
         logger.info "==== Visit Page: #{args[:url]}-page#{n}"
         services_urls = all(:xpath, "//table[@id='adoos-ads-list']//h4//a").map{ |a| a[:href] }
@@ -57,19 +57,19 @@ namespace :adoos do
                 recollection_page_emails = RecollectionPage.where(recollection_id: recollection.id, page_id: service_page.id).first_or_create
                 email_recollector.recollect_emails body: body, title: title, uri: URI.parse(service_url)
                 phone_number = all(:xpath, "//span[@class='adoos-phone-number']//b").try(:first).try(:text)
-                
+=begin
                 click_button 'adoos-contact-button'
                 fill_in 'message', with: project.messages.sample.text.gsub(':name', sender.name).gsub(':recollection_name', recollection.name).gsub(':url', service_url)
                 fill_in 'name_from', with: sender.name
                 fill_in 'email_from', with: sender.email
                 click_button 'adoos-contact-button-submit'
-                
+
                 logger.info "== Posted: #{contact_url}"
                 contact_page.update_attribute :posted, true
-                
+=end                
                 recollection.save_emails_and_pages email_recollector.recollections
-                recollection_page_emails.phones << Phone.where(number: phone_number) unless recollection_page_emails.phones.pluck(:number).include?(phone_number)
-                sleep 3
+                recollection_page_emails.phones << Phone.where(number: phone_number) unless recollection_page_emails.phones.pluck(:number).include?(phone_number)                
+                #sleep 3
             end
           rescue Exception => e
             logger.error "== Error: #{e.message}"
