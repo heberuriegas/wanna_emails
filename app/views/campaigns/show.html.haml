@@ -22,10 +22,10 @@
   = distance_of_time_in_words(@campaign.starts_at, @campaign.ends_at) if @campaign.starts_at.present? && @campaign.ends_at.present?
 %p
   %b Total Emails:
-  = @campaign.emails_count
+  = @campaign.emails.count
 %p
   %b Emails Available:
-  = @campaign.emails_available_count
+  = @campaign.emails_available.count
 %p
   %b Report:
   = @campaign.report

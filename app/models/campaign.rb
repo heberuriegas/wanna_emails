@@ -77,15 +77,7 @@ class Campaign < ActiveRecord::Base
     self.recollections.each do |recollection|
       emails.concat recollection.emails
     end
-    emails
-  end
-
-  def emails_count
-    emails = 0
-    self.recollections.each do |recollection|
-      emails = emails + recollection.emails_count
-    end
-    emails
+    emails.uniq{|email| email.address}
   end
 
   def emails_available
@@ -93,15 +85,7 @@ class Campaign < ActiveRecord::Base
     self.recollections.each do |recollection|
       emails.concat recollection.emails_available
     end
-    emails
-  end
-
-  def emails_available_count
-    emails = 0
-    self.recollections.each do |recollection|
-      emails = emails + recollection.emails_available_count
-    end
-    emails
+    emails.uniq{|email| email.address}
   end
 
   def record_ends_at

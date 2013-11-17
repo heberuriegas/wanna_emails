@@ -88,8 +88,9 @@ class Recollection < ActiveRecord::Base
 
   def reach
     if self.recollection_pages.present?
-      emails = self.recollection_pages.sum('emails_recollection_pages_count')
-      "#{emails} emails - #{((emails.to_f/self.goal.to_f)*100).round(2)}% of the total"
+      #emails = self.recollection_pages.sum('emails_recollection_pages_count')
+      emails = self.emails.count
+      self.goal.present? ? "#{emails} emails - #{((emails.to_f/self.goal.to_f)*100).round(2)}% of the total" : "#{emails} Emails"
     end
   end
 
@@ -102,27 +103,18 @@ class Recollection < ActiveRecord::Base
 
   def emails
     #Email.includes(:recollection_pages).where('recollection_pages.recollection_id = ?',self.id).references(:recollection_pages)
-    Email.joins(:recollection_pages).where('recollection_pages.recollection_id = ?',self.id)
+    Email
+      .joins(:recollection_pages)
+      .where('recollection_pages.recollection_id = ?',self.id)
+      .uniq{|email| email.address}
   end
 
-  def emails_count
-    #Email.includes(:recollection_pages).where('recollection_pages.recollection_id = ?',self.id).references(:recollection_pages)
-    Email.joins(:recollection_pages).select('count(*) as count').where('recollection_pages.recollection_id = ?',self.id).count
-  end
-
-  def emails_available days = 0
+  def emails_available days = 1
     Email
       .joins(:recollection_pages)
       .where('recollection_pages.recollection_id = ?',self.id)
       .where("TIMESTAMP '#{DateTime.now.strftime('%Y-%m-%d')}' - last_sent_at >= INTERVAL '#{days} days' OR last_sent_at is NULL")
-  end
-
-  def emails_available_count days = 0
-    Email
-      .joins(:recollection_pages)
-      .select('count(*) as count')
-      .where('recollection_pages.recollection_id = ?',self.id)
-      .where("TIMESTAMP '#{DateTime.now.strftime('%Y-%m-%d')}' - last_sent_at >= INTERVAL '#{days} days' OR last_sent_at is NULL").count
+      .uniq{|email| email.address}
   end
 
   def email_providers options = {}
