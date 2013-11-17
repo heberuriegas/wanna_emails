@@ -31,8 +31,8 @@
   = @campaign.report
 - if @campaign.state_name == :waiting
   = link_to 'Start', project_campaign_path(@project, @campaign, { start: true })
-- if @campaign.state_name == :failed
-  = link_to 'Try Again', project_campaign_path(@project, @campaign, { try_again: true })
+- else
+  = link_to 'Try Again', project_campaign_path(@project, @campaign, { try_again: true, force: true })
 
 = link_to 'Edit', edit_project_campaign_path(@project,@campaign)
 \|
