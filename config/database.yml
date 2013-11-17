@@ -2,7 +2,7 @@ development:
   adapter: postgresql
   encoding: utf8
   reconnect: false
-  pool: 15
+  pool: 75
   database: wanna_emails_development
   username: <%=ENV['PGUSER']%>
   password: <%=ENV['PGPASSWORD']%>
