@@ -7,6 +7,7 @@
     %th Address
     %th Country Code
     %th Goal
+    %th Reach
     %th Search
     %th Status
     %th Time
@@ -21,6 +22,7 @@
       %td= recollection.address
       %td= recollection.country_code
       %td= recollection.goal
+      %td= recollection.reach
       %td= recollection.search
       %td= recollection.status
       %td= distance_of_time_in_words(recollection.starts_at, recollection.ends_at) if recollection.starts_at.present? && recollection.ends_at.present?
