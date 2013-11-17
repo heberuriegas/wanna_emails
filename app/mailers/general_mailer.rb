@@ -20,6 +20,7 @@ class GeneralMailer < ActionMailer::Base
         body: message.text,
         delivery_method_options: sender.sender_entity.configuration_hash(sender))
 
+      email.update_attribute :last_sent_at, DateTime.now.strftime('%Y-%m-%d')
       SentEmail.create(campaign: campaign, sender: sender, message: message, email: email)
       logger.info "== Sent email from: #{sender.email} to #{email.address}"
     rescue Exception => e
