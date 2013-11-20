@@ -25,7 +25,8 @@ senders = [
     domain: 'gmail.com',
     authentication: 'plain',
     enable_starttls_auto: true,
-    limit: 500
+    limit: 500,
+    full_user_name: false
   },
   {
     name: "Yahoo",
@@ -34,7 +35,8 @@ senders = [
     domain: 'yahoo.com',
     authentication: 'plain',
     enable_starttls_auto: true,
-    limit: 500
+    limit: 500,
+    full_user_name: false
   },
   {
     name: "Yahoo Chile",
@@ -43,7 +45,18 @@ senders = [
     domain: 'yahoo.cl',
     authentication: 'plain',
     enable_starttls_auto: true,
-    limit: 500
+    limit: 500,
+    full_user_name: false
+  },
+  {
+    name: "Outlook",
+    address: 'smtp.live.com',
+    port: 587,
+    domain: 'example.com',
+    authentication: 'plain',
+    enable_starttls_auto: true,
+    limit: 500,
+    full_user_name: true
   }
 ]
 

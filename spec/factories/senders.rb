@@ -9,5 +9,6 @@ FactoryGirl.define do
     language { generate :language }
     mail_sent { generate :random_number }
     blocked { generate :boolean }
+    last_blocked_at { generate :date }
   end
 end

@@ -107,6 +107,26 @@ class Campaign < ActiveRecord::Base
     Rails.logger.info report
   end
 
+  def self.send_email campaign_id, sender_id, email_id, message_id
+    begin
+      GeneralMailer.general(campaign_id, sender_id, email_id, message_id).deliver!
+
+      campaign, sender, email, message = Campaign.find(campaign_id), Sender.find(sender_id), Email.find(email_id), Message.find(message_id)
+      SentEmail.create(campaign: campaign, sender: sender, message: message, email: email)
+
+      GeneralMailer.logger.info "== Sent email from: #{sender.email} to #{email.address}"
+    rescue Net::SMTPAuthenticationError => e
+      sender = Sender.find(sender_id)
+      sender.block!
+      GeneralMailer.logger.error "==== Sender #{sender.email} was blocked!"
+      GeneralMailer.logger.error e.message
+    rescue Exception => e
+      GeneralMailer.logger.error "==== Error in Email id: #{email_id}"
+      GeneralMailer.logger.error e.message
+      GeneralMailer.logger.error e.backtrace.join("\n")
+    end
+  end
+
   def send_emails
     transaction { self.start_progress }
     begin
@@ -116,7 +136,7 @@ class Campaign < ActiveRecord::Base
 
       self.emails_available[0...Sender.availables_count(language: self.project.language)].each do |email|
       #self.emails[0...5].each do |email|
-        GeneralMailer.delay_for(rand(minutes).minutes).general(self.id, senders.sample.id, email.id, messages.sample.id)
+        Campaign.delay_for.send_email(rand(minutes).minutes, self.id, senders.sample.id, email.id, messages.sample.id)
         #GeneralMailer.general(self.id, senders.sample.id, email.id, messages.sample.id).deliver!
       end
 

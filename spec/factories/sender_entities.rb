@@ -4,6 +4,8 @@ FactoryGirl.define do
   factory :sender_entity do
     authentication 'plain'
     enable_starttls_auto true
+    limit { generate :random_number }
+    full_user_name { generate :boolean }
 
     factory :sender_entity_gmail do
         name 'Gmail'

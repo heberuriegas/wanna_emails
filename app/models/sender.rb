@@ -12,21 +12,45 @@ class Sender < ActiveRecord::Base
       last_name = Sender.last_names(language).sample
 
       self.name = "#{name.capitalize} #{last_name.capitalize}"
-      self.email = "#{name.underscore}#{last_name.underscore}#{rand(1000).to_s}#{DOMAINS.sample}".gsub('Ñ','n').gsub('ñ','n')
+      self.email = "#{name.underscore}#{last_name.underscore}#{rand(1000).to_s}#{self.domain}".gsub('Ñ','n').gsub('ñ','n')
       self.password = ENV['ACCOUNTS_PASSWORD']
       self.language = language.to_s
     end
+  end
+
+  def domain
+    return case self.sender_entity.try(:name)
+      when 'Yahoo'
+        DOMAINS[0]
+      when 'Gmail'
+        DOMAINS[1]
+      when 'Hotmail'
+        DOMAINS[2]
+      when 'Outlook'
+        DOMAINS[3]
+      else
+        DOMAINS.sample
+      end
+  end
+
+  def block!
+    self.update_attributes blocked: true, last_blocked_at: DateTime.now
+  end
+
+  def unblock!
+    self.update_attribute :blocked, false
   end
 
   def self.languages
     LANGUAGES
   end
 
-  def self.mobile_number(country = :CL)
+  def self.mobile_number(options={})
+    options.reverse_merge!(country: :CL, prefix: false)
     mobile_numbers = {
-      CL: lambda { "95127#{rand(9)}#{rand(9)}#{rand(9)}#{rand(9)}" }
+      CL: lambda { "#{options[:prefix] == true ? '+56' : ''}9512217#{rand(9)}#{rand(9)}" }
     }
-    mobile_numbers[country].call
+    mobile_numbers[options[:country]].try(:call)
   end
 
   def user_name
@@ -38,13 +62,27 @@ class Sender < ActiveRecord::Base
   end
 
   def blocked?
-    return self.sent? >= self.sender_entity.limit
+    return (self.sent? >= self.sender_entity.limit or self.blocked == true)
+  end
+
+  def configuration_hash
+    user_name = self.sender_entity.full_user_name == true ? self.email : self.user_name
+    {
+      address: self.sender_entity.address,
+      authentication: self.sender_entity.authentication.to_sym,
+      user_name: user_name,
+      password: password,
+      domain: self.sender_entity.domain,
+      port: self.sender_entity.port,
+      enable_starttls_auto: self.sender_entity.enable_starttls_auto
+    }
   end
 
   def self.availables options = {}
     options.reverse_merge!(sent_at: DateTime.now.strftime('%Y-%m-%d'))
     filter_params = {}
     filter_params.merge! language: options[:language] if options[:language].present?
+    filter_params.merge! blocked: false
 
     sents = self.sents(options).to_sql
 
@@ -65,6 +103,8 @@ class Sender < ActiveRecord::Base
     options.reverse_merge!(sent_at: DateTime.now.strftime('%Y-%m-%d'))
     filter_params = { sent_emails: { sent_at:  options[:sent_at] } }
     filter_params.merge!(language: options[:language]) if options[:language].present?    
+    filter_params.merge! blocked: false
+
     self
       .joins(:sent_emails)
       .select('senders.*',"count(*) as count")

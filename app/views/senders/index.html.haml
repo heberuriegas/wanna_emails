@@ -8,6 +8,7 @@
     %th Password
     %th Mail sent
     %th Blocked
+    %th Last blocked at
     %th Language
     %th Updated At
     %th
@@ -22,6 +23,7 @@
       %td= sender.password
       %td= sender.mail_sent
       %td= sender.blocked
+      %td= sender.last_blocked_at
       %td= sender.language
       %td= sender.updated_at
       %td= link_to 'Show', sender

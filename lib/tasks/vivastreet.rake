@@ -27,7 +27,6 @@ namespace :vivastreet do
     include Capybara::DSL
 
     agent = TorPrivoxy::Agent.new host: ENV['TOR_HOST'], password: ENV['TOR_PASSWORD'], privoxy_port: ENV['TOR_PRIVOXY_PORT'], control_port: ENV['TOR_CONTROL_PORT'], capybara: true do |agent|
-      sleep 10
       logger.info "New IP is #{agent.ip}"
     end if args[:tor] == 'true'
     

@@ -21,6 +21,9 @@
 %p
   %b Blocked:
   = @sender.blocked
+%p
+  %b Last blocked at:
+  = @sender.last_blocked_at
 
 = link_to 'Edit', edit_sender_path(@sender)
 \|

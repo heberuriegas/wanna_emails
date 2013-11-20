@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131116194333) do
+ActiveRecord::Schema.define(version: 20131119193211) do
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -154,6 +154,7 @@ ActiveRecord::Schema.define(version: 20131116194333) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "limit",                default: 0
+    t.boolean  "full_user_name",       default: false
   end
 
   create_table "senders", force: true do |t|
@@ -166,6 +167,7 @@ ActiveRecord::Schema.define(version: 20131116194333) do
     t.boolean  "blocked",          default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "last_blocked_at"
   end
 
   add_index "senders", ["sender_entity_id"], name: "index_senders_on_sender_entity_id", using: :btree
