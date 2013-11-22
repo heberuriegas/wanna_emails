@@ -136,7 +136,7 @@ class Campaign < ActiveRecord::Base
 
       self.emails_available[0...Sender.availables_count(language: self.project.language)].each do |email|
       #self.emails[0...5].each do |email|
-        Campaign.delay_for.send_email(rand(minutes).minutes, self.id, senders.sample.id, email.id, messages.sample.id)
+        Campaign.delay_for(rand(minutes).minutes).send_email(self.id, senders.sample.id, email.id, messages.sample.id)
         #GeneralMailer.general(self.id, senders.sample.id, email.id, messages.sample.id).deliver!
       end
 
