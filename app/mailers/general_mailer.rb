@@ -6,11 +6,27 @@ class GeneralMailer < ActionMailer::Base
     raise ('Email needs recollection_pages') unless email.recollection_pages.present?
     
     if sender.blocked?
-      sender = Sender.availables(language: self.project.language).sample
+      sender = Sender.availables(language: campaign.project.language).sample
       raise('All senders are blocked today') unless sender.present?
     end
     
     message = message.sanitize(sender,email.recollection_pages.sample, html: true)
+
+    mail(
+      from: "#{sender.name} <#{sender.email}>",
+      to: email.address,
+      content_type: "text/html",
+      subject: message.subject,
+      body: message.text,
+      delivery_method_options: sender.configuration_hash)
+  end
+
+  def general_test sender_id = nil
+    sender = sender_id.present? ? Sender.find(sender_id) : SenderEntity.find_by(name: 'Outlook').senders.sample
+    message = Message.all.sample
+    email = Email.where("address like 'heber.fernando+%'").sample
+
+    puts "===== #{sender.id} #{sender.email}"
 
     mail(
       from: "#{sender.name} <#{sender.email}>",
