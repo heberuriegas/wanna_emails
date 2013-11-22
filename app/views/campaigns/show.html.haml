@@ -27,6 +27,9 @@
   %b Emails Available:
   = @campaign.emails_available.count
 %p
+  %b Senders Available:
+  = Sender.availables_count(language: @campaign.project.language)
+%p
   %b Report:
   = @campaign.report
 - if @campaign.state_name == :waiting
