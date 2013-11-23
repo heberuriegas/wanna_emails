@@ -52,10 +52,10 @@ senders = [
     name: "Outlook",
     address: 'smtp.live.com',
     port: 587,
-    domain: 'example.com',
+    domain: 'live.com',
     authentication: 'plain',
     enable_starttls_auto: true,
-    limit: 500,
+    limit: 450,
     full_user_name: true
   }
 ]
