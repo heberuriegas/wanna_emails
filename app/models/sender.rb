@@ -61,6 +61,10 @@ class Sender < ActiveRecord::Base
     self.sent_emails.select('count(sent_at) as count').where(sent_emails: { sent_at: DateTime.now.strftime('%Y-%m-%d') }).group('sent_emails.sent_at').order(nil).try(:first).try(:count) || 0
   end
 
+  def left?
+    self.sender_entity.limit - self.sent?
+  end
+
   def blocked?
     return (self.sent? >= self.sender_entity.limit or self.blocked == true)
   end
