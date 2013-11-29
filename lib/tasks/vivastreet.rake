@@ -36,7 +36,7 @@ namespace :vivastreet do
 
     recollection = Recollection.where(name: args[:recollection], project_id: project.id).first_or_create
     recollection.update_attribute :unique_pages, true if recollection.unique_pages == false
-    senders = Sender.where(language: 'ES').where('id between 33 and 38')
+    senders = Sender.where(language: 'ES').where(id: [33,34,35,37,38])
 
     email_recollector = EmailRecollector.new
 
