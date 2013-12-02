@@ -22,7 +22,7 @@ namespace :yapo do
 
     Capybara.app_host = args[:url]
     Capybara.default_wait_time = 10
-    Capybara.current_driver = :webkit
+    Capybara.current_driver = :selenium
 
     include Capybara::DSL
 
