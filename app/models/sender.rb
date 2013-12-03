@@ -1,3 +1,4 @@
+# encoding: utf-8
 class Sender < ActiveRecord::Base
   belongs_to :sender_entity
   has_many :sent_emails
