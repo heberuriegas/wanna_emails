@@ -1,6 +1,14 @@
 # Execute with: 
 # rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
+require "capybara"
+require "capybara/dsl"
+begin
+  require 'capybara-webkit'
+rescue LoadError => e
+  puts 'Warning: Webkit is not loaded.'
+end
+
 namespace :yahoo_accounts do
 
   desc "Generate data dummy for services"
@@ -10,10 +18,6 @@ namespace :yahoo_accounts do
 
     logger = Logger.new("log/accounts/yahoo_accounts.log")
     logger.info "=============================== Run #{DateTime.now.to_s}"
-
-    require "capybara"
-    require "capybara/dsl"
-    require "capybara-webkit"
 
     Capybara.app_host = args[:url]
     Capybara.default_wait_time = 10
@@ -81,10 +85,6 @@ namespace :yahoo_accounts do
     campaign = Campaign.find(args[:campaign_id])
 
     LOGIN_LIMIT = 1
-
-    require "capybara"
-    require "capybara/dsl"
-    require "capybara-webkit"
 
     Capybara.app_host = 'http://mail.yahoo.com'
     Capybara.default_wait_time = 10

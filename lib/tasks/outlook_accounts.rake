@@ -1,6 +1,14 @@
 # Execute with: 
 # rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
+require "capybara"
+require "capybara/dsl"
+begin
+  require 'capybara-webkit'
+rescue LoadError => e
+  puts 'Warning: Webkit is not loaded.'
+end
+
 namespace :outlook_accounts do
 
   desc "Generate data dummy for services"
@@ -10,10 +18,6 @@ namespace :outlook_accounts do
 
     logger = Logger.new("log/accounts/outlook_accounts.log")
     logger.info "=============================== Run #{DateTime.now.to_s}"
-
-    require "capybara"
-    require "capybara/dsl"
-    require "capybara-webkit"
 
     Capybara.app_host = args[:url]
     Capybara.default_wait_time = 10

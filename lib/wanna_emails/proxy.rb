@@ -4,7 +4,11 @@ module WannaEmails
       
       require "capybara"
       require "capybara/dsl"
-      require "capybara-webkit"
+      begin
+        require 'capybara-webkit'
+      rescue LoadError => e
+        puts 'Warning: Webkit is not loaded.'
+      end
 
       Capybara.default_wait_time = 10
       Capybara.current_driver = :selenium
