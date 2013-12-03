@@ -58,7 +58,7 @@ group :development, :test do
   gem 'thin'
   gem 'faker'
   gem 'pry-rails'
-  gem 'capybara-webkit'
+  gem 'capybara-webkit', :require => nil
 end
 group :production do
   gem 'unicorn'
