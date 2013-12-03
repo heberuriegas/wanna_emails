@@ -28,12 +28,6 @@ gem 'tire'
 gem 'sinatra', '>= 1.3.0', :require => nil
 gem 'sidekiq'
 gem 'validates_email_format_of'
-gem 'capybara'
-gem 'capybara-webkit'
-gem 'selenium-webdriver'
-gem 'capybara-screenshot'
-gem 'tor'
-gem 'tor-privoxy', git: 'https://github.com/woohoou/tor-privoxy.git'
 gem 'time_diff'
 group :assets do
   gem 'therubyracer', :platform=>:ruby
@@ -59,6 +53,12 @@ group :development, :test do
   gem 'thin'
   gem 'faker'
   gem 'pry-rails'
+  gem 'capybara'
+  gem 'capybara-webkit'
+  gem 'selenium-webdriver'
+  gem 'capybara-screenshot'
+  gem 'tor'
+  gem 'tor-privoxy', git: 'https://github.com/woohoou/tor-privoxy.git'
 end
 group :production do
   gem 'unicorn'
