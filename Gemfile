@@ -29,6 +29,7 @@ gem 'sinatra', '>= 1.3.0', :require => nil
 gem 'sidekiq'
 gem 'validates_email_format_of'
 gem 'capybara'
+gem 'capybara-webkit'
 gem 'selenium-webdriver'
 gem 'capybara-screenshot'
 gem 'tor'
@@ -67,4 +68,3 @@ group :test do
   gem 'email_spec'
   gem 'sqlite3'
 end
-
