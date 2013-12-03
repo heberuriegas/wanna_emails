@@ -342,7 +342,6 @@ DEPENDENCIES
   cancan
   capybara
   capybara-screenshot
-  capybara-webkit
   coffee-rails (~> 4.0.0)
   database_cleaner (= 1.0.1)
   debugger
