@@ -6,7 +6,7 @@ require "capybara/dsl"
 begin
   require 'capybara-webkit'
 rescue LoadError => e
-  puts 'Warning: Webkit is not loaded.'
+  
 end
 
 namespace :yapo do

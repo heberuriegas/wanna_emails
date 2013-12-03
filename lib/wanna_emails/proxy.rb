@@ -7,7 +7,7 @@ module WannaEmails
       begin
         require 'capybara-webkit'
       rescue LoadError => e
-        puts 'Warning: Webkit is not loaded.'
+        
       end
 
       Capybara.default_wait_time = 10

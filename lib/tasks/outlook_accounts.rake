@@ -1,3 +1,4 @@
+# encoding: utf-8
 # Execute with: 
 # rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
@@ -6,7 +7,7 @@ require "capybara/dsl"
 begin
   require 'capybara-webkit'
 rescue LoadError => e
-  puts 'Warning: Webkit is not loaded.'
+  
 end
 
 namespace :outlook_accounts do
