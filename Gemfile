@@ -29,7 +29,6 @@ gem 'sinatra', '>= 1.3.0', :require => nil
 gem 'sidekiq'
 gem 'validates_email_format_of'
 gem 'capybara'
-gem 'capybara-webkit'
 gem 'selenium-webdriver'
 gem 'capybara-screenshot'
 gem 'tor'
@@ -59,6 +58,7 @@ group :development, :test do
   gem 'thin'
   gem 'faker'
   gem 'pry-rails'
+  gem 'capybara-webkit'
 end
 group :production do
   gem 'unicorn'
