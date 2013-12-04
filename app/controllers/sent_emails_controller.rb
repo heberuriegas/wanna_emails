@@ -4,6 +4,7 @@ class SentEmailsController < ApplicationController
   respond_to :json
 
   def create
-    render json: GeneralMailer.basic(params).deliver!
+    GeneralMailer.basic(params).deliver!
+    render json: 'ok'
   end
 end
