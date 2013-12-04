@@ -14,6 +14,18 @@ class Campaign < ActiveRecord::Base
     failed: 4
   }
 
+  def self.proxies
+    @@temp_proxies ||= eval(ENV['SEND_PROXIES'])
+    @@proxies ||= @@temp_proxies.map do |url|
+      Faraday.new(:url => url) do |faraday|
+        faraday.request  :url_encoded             # form-encode POST params
+        faraday.response :logger                  # log requests to STDOUT
+        faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
+      end
+    end
+    return @@proxies.present? ? @@proxies : nil
+  end
+
   state_machine initial: :waiting do
     STATES.each do |name, value|
       state name, value: value
@@ -109,12 +121,25 @@ class Campaign < ActiveRecord::Base
 
   def self.send_email campaign_id, sender_id, email_id, message_id
     begin
-      GeneralMailer.general(campaign_id, sender_id, email_id, message_id).deliver!
-
       campaign, sender, email, message = Campaign.find(campaign_id), Sender.find(sender_id), Email.find(email_id), Message.find(message_id)
-      SentEmail.create(campaign: campaign, sender: sender, message: message, email: email)
+      
+      if self.proxies.present?
+        params = { sender: sender.email, subject: message.subject, text: message.text, to: email.address }
+        params.merge!(token: ENV['API_TOKEN']) if ENV['API_TOKEN'].present?
+        response = self.proxies.sample.post('/api/sent_emails.json', params)
+      else
+        GeneralMailer.general(campaign_id, sender_id, email_id, message_id).deliver!
+      end
 
-      GeneralMailer.logger.info "== Sent email from: #{sender.email} to #{email.address}"
+      case response.status
+        when 200
+          SentEmail.create(campaign: campaign, sender: sender, message: message, email: email)
+          GeneralMailer.logger.info "== Sent email from: #{sender.email} to #{email.address}"
+        when 422
+          raise(JSON.parse(respone.body)[:error])
+        else
+          raise("Unknown error")
+      end
     rescue Net::SMTPAuthenticationError => e
       sender = Sender.find(sender_id)
       sender.block!
@@ -132,11 +157,12 @@ class Campaign < ActiveRecord::Base
     begin
       senders = Sender.availables(language: self.project.language)
       messages = self.project.messages
-      minutes = Time.diff(DateTime.now,DateTime.tomorrow)[:hour]*60+Time.diff(DateTime.now,DateTime.tomorrow)[:minute]
+      seconds = Time.diff(DateTime.now,DateTime.tomorrow)[:hour]*60*60+Time.diff(DateTime.now,DateTime.tomorrow)[:second]
 
-      self.emails_available[0...Sender.availables_count(language: self.project.language)].each do |email|
-      #self.emails[0...5].each do |email|
-        Campaign.delay_for(rand(minutes).minutes).send_email(self.id, senders.sample.id, email.id, messages.sample.id)
+      #self.emails_available[0...Sender.availables_count(language: self.project.language)].each do |email|
+      self.emails[0...5].each do |email|
+        #Campaign.delay_for(rand(seconds).seconds).send_email(self.id, senders.sample.id, email.id, messages.sample.id)
+        Campaign.delay.send_email(self.id, senders.sample.id, email.id, messages.sample.id)
         #GeneralMailer.general(self.id, senders.sample.id, email.id, messages.sample.id).deliver!
       end
 
