@@ -10,7 +10,7 @@ class GeneralMailer < ActionMailer::Base
       raise('All senders are blocked today') unless sender.present?
     end
     
-    message = message.sanitize(sender,email.recollection_pages.sample, html: true)
+    message = message.sanitize(sender,email.try(:recollection_pages).try(:sample), html: true)
 
     mail(
       from: "#{sender.name} <#{sender.email}>",

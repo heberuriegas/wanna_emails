@@ -19,6 +19,14 @@ class Sender < ActiveRecord::Base
     end
   end
 
+  def name
+    if self[:name].present?
+      self[:name]
+    else
+      self.email.split('@').first.split(/\d/).first.underscore.split('_').join(' ').titleize
+    end
+  end
+
   def domain
     return case self.sender_entity.try(:name)
       when 'Yahoo'
