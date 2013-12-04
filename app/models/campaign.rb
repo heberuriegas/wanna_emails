@@ -124,8 +124,9 @@ class Campaign < ActiveRecord::Base
       campaign, sender, email, message = Campaign.find(campaign_id), Sender.find(sender_id), Email.find(email_id), Message.find(message_id)
       
       if self.proxies.present?
+        message = message.sanitize(sender,email.try(:recollection_pages).try(:sample), html: true)
         params = { sender: sender.email, subject: message.subject, text: message.text, to: email.address }
-        params.merge!(token: ENV['API_TOKEN']) if ENV['API_TOKEN'].present?
+        params.merge!(api_token: ENV['API_TOKEN']) if ENV['API_TOKEN'].present?
         response = self.proxies.sample.post('/api/sent_emails.json', params)
       else
         GeneralMailer.general(campaign_id, sender_id, email_id, message_id).deliver!
@@ -136,7 +137,7 @@ class Campaign < ActiveRecord::Base
           SentEmail.create(campaign: campaign, sender: sender, message: message, email: email)
           GeneralMailer.logger.info "== Sent email from: #{sender.email} to #{email.address}"
         when 422
-          raise(JSON.parse(respone.body)[:error])
+          raise(response.body)
         else
           raise("Unknown error")
       end
@@ -159,10 +160,10 @@ class Campaign < ActiveRecord::Base
       messages = self.project.messages
       seconds = Time.diff(DateTime.now,DateTime.tomorrow)[:hour]*60*60+Time.diff(DateTime.now,DateTime.tomorrow)[:second]
 
-      #self.emails_available[0...Sender.availables_count(language: self.project.language)].each do |email|
-      self.emails[0...5].each do |email|
-        #Campaign.delay_for(rand(seconds).seconds).send_email(self.id, senders.sample.id, email.id, messages.sample.id)
-        Campaign.delay.send_email(self.id, senders.sample.id, email.id, messages.sample.id)
+      self.emails_available[0...Sender.availables_count(language: self.project.language)].each do |email|
+      #self.emails[0...5].each do |email|
+        Campaign.delay_for(rand(seconds).seconds).send_email(self.id, senders.sample.id, email.id, messages.sample.id)
+        #Campaign.delay.send_email(self.id, senders.sample.id, email.id, messages.sample.id)
         #GeneralMailer.general(self.id, senders.sample.id, email.id, messages.sample.id).deliver!
       end
 
