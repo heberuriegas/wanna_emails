@@ -158,11 +158,13 @@ class Campaign < ActiveRecord::Base
     begin
       senders = Sender.availables(language: self.project.language)
       messages = self.project.messages
-      seconds = Time.diff(DateTime.now,DateTime.tomorrow)[:hour]*60*60+Time.diff(DateTime.now,DateTime.tomorrow)[:second]
+      #seconds = Time.diff(DateTime.now,DateTime.tomorrow)[:hour]*60*60+Time.diff(DateTime.now,DateTime.tomorrow)[:second]
+      seconds = 30.seconds
 
       self.emails_available[0...Sender.availables_count(language: self.project.language)].each do |email|
       #self.emails[0...5].each do |email|
-        Campaign.delay_for(rand(seconds).seconds).send_email(self.id, senders.sample.id, email.id, messages.sample.id)
+        Campaign.delay_for(seconds).send_email(self.id, senders.sample.id, email.id, messages.sample.id)
+        seconds = seconds+30.seconds
         #Campaign.delay.send_email(self.id, senders.sample.id, email.id, messages.sample.id)
         #GeneralMailer.general(self.id, senders.sample.id, email.id, messages.sample.id).deliver!
       end
