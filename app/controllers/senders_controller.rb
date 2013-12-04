@@ -1,4 +1,5 @@
 class SendersController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_sender, only: [:show, :edit, :update, :destroy]
 
   # GET /senders
