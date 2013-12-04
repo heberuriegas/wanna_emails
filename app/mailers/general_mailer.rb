@@ -24,7 +24,7 @@ class GeneralMailer < ActionMailer::Base
   def basic options = {}
     options.reverse_merge!(from: Sender.availables.sample)
 
-    sender, message, to = Sender.where(email: options[:sender]), Message.new(subject: options[:subject], text: options[:text]), options[:to]
+    sender, message, to = Sender.find_by(email: options[:sender]), Message.new(subject: options[:subject], text: options[:text]), options[:to]
     raise("Sender not available.") unless sender.present?
     raise("To not available.") unless to.present?
     raise("Message not available.") unless message.present?
