@@ -26,7 +26,7 @@ senders = [
     authentication: 'plain',
     enable_starttls_auto: true,
     limit: 500,
-    full_user_name: false
+    full_user_name: true
   },
   {
     name: "Yahoo",
