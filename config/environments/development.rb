@@ -30,5 +30,10 @@ WannaEmails::Application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.logger = Logger.new("log/mailer.log")
 
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.bullet_logger = true
+  end
+
   #require 'sidekiq/testing/inline'
 end

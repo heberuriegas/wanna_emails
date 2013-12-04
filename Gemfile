@@ -34,6 +34,7 @@ gem 'selenium-webdriver'
 gem 'capybara-screenshot'
 gem 'tor'
 gem 'tor-privoxy', git: 'https://github.com/woohoou/tor-privoxy.git'  
+gem 'faraday'
 group :assets do
   gem 'therubyracer', :platform=>:ruby
 end
@@ -44,10 +45,10 @@ group :development do
   gem 'guard-rails'
   gem 'guard-rspec'
   gem 'html2haml'
-  gem 'debugger'
   gem 'hub', :require=>nil
   gem 'quiet_assets'
   gem 'rails_layout'
+  gem 'bullet'
   gem 'rb-fchange', :require=>false
   gem 'rb-fsevent', :require=>false
   gem 'rb-inotify', :require=>false
@@ -58,6 +59,7 @@ group :development, :test do
   gem 'thin'
   gem 'faker'
   gem 'pry-rails'
+  gem 'debugger'
   gem 'capybara-webkit', :require=>false
 end
 group :production do

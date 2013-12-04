@@ -11,6 +11,10 @@ WannaEmails::Application.routes.draw do
     resources :recollection_pages, only: [:index, :destroy]
   end
 
+  scope :api do
+    resources :sent_emails, only: [:create]
+  end
+
   root :to => "projects#index"
   devise_for :users, :controllers => {:registrations => "registrations"}
   resources :users

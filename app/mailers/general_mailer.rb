@@ -21,16 +21,17 @@ class GeneralMailer < ActionMailer::Base
       delivery_method_options: sender.configuration_hash)
   end
 
-  def general_test sender_id = nil
-    sender = sender_id.present? ? Sender.find(sender_id) : SenderEntity.find_by(name: 'Outlook').senders.sample
-    message = Message.all.sample
-    email = Email.where("address like 'heber.fernando+%'").sample
+  def basic options = {}
+    options.reverse_merge!(from: Sender.availables.sample)
 
-    puts "===== #{sender.id} #{sender.email}"
+    sender, message, to = Sender.where(email: options[:sender]), Message.new(subject: options[:subject], text: options[:text]), options[:to]
+    raise("Sender not available.") unless sender.present?
+    raise("To not available.") unless to.present?
+    raise("Message not available.") unless message.present?
 
     mail(
       from: "#{sender.name} <#{sender.email}>",
-      to: email.address,
+      to: to,
       content_type: "text/html",
       subject: message.subject,
       body: message.text,
