@@ -71,6 +71,9 @@ WannaEmails::Application.configure do
 
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.logger = Logger.new("log/mailer.log")
 
   # Disable automatic flushing of the log to improve performance.
   # config.autoflush_log = false
