@@ -57,6 +57,16 @@ senders = [
     enable_starttls_auto: true,
     limit: 450,
     full_user_name: true
+  },
+  {
+    name: "Yandex",
+    address: 'smtp.yandex.com',
+    port: 25,
+    domain: 'yandex.ru.com',
+    authentication: 'plain',
+    enable_starttls_auto: false,
+    limit: 450,
+    full_user_name: true
   }
 ]
 
