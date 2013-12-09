@@ -144,11 +144,13 @@ class Campaign < ActiveRecord::Base
           raise("Unknown error")
       end
     rescue Net::SMTPAuthenticationError => e
-      sender = Sender.find(sender_id)
-      sender.block!
+      sender = Sender.find_by(id: sender_id)
+      sender.block! if sender.present?
       GeneralMailer.logger.error "==== Sender #{sender.email} was blocked!"
       GeneralMailer.logger.error e.message
     rescue Exception => e
+      sender = Sender.find_by(id: sender_id)
+      sender.block! if sender.present?
       GeneralMailer.logger.error "==== Error in Email id: #{email_id}"
       GeneralMailer.logger.error e.message
       GeneralMailer.logger.error e.backtrace.join("\n")
