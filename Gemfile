@@ -35,6 +35,7 @@ gem 'capybara-screenshot'
 gem 'tor'
 gem 'tor-privoxy', git: 'https://github.com/woohoou/tor-privoxy.git'  
 gem 'faraday'
+gem 'rubyfish'
 group :assets do
   gem 'therubyracer', :platform=>:ruby
 end

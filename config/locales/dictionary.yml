@@ -1,0 +1,46 @@
+---
+es:
+  contact:
+  - contact
+  - contactanos
+  - contacto
+  - contactenos
+  - contactos
+  name:
+  - nombre
+  - name
+  - tu nombre
+  last_name:
+  - apellido
+  - apellidos
+  - lastname
+  - last_name
+  - segundo_nombre
+  email:
+  - mail
+  - email
+  - e-mail
+  - e_mail
+  - correo
+  - correo_electronico
+  phone:
+  - teléfono
+  - telefono
+  - mobil
+  - movil
+  - celular
+  - phone
+  - cellphone
+  - cell_phone
+  message:
+  - comentarios
+  - mensaje
+  - comentario
+  - comment
+  - message
+  - text
+  - texto
+  submit:
+  - submit
+  - enviar
+  - envia
