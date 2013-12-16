@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131202162156) do
+ActiveRecord::Schema.define(version: 20131209193411) do
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -63,13 +63,22 @@ ActiveRecord::Schema.define(version: 20131202162156) do
 
   add_index "messages", ["project_id"], name: "index_messages_on_project_id", using: :btree
 
+  create_table "page_types", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "pages", force: true do |t|
     t.string   "host"
     t.text     "uri"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "posted",     default: false
+    t.boolean  "posted",       default: false
+    t.integer  "page_type_id"
   end
+
+  add_index "pages", ["page_type_id"], name: "index_pages_on_page_type_id", using: :btree
 
   create_table "pages_recollections", force: true do |t|
     t.integer "page_id"

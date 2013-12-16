@@ -22,6 +22,9 @@ class Recollection < ActiveRecord::Base
   @@email_providers = [:gmail, :outlook, :hotmail, :live, :yahoo]
   @@sufix_domains = [:com]
 
+  @@reg_facebook = /(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w\-]*)/i
+  @@reg_twitter = /http:\/\/twitter\.com\/(#!\/)?[a-zA-Z0-9_]+/i
+
   STATES = {
     waiting: 0,
     started: 1,

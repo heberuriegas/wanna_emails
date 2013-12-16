@@ -1,7 +1,7 @@
 class Message < ActiveRecord::Base
   belongs_to :project
 
-  def sanitize(sender, recollection_page, options={})
+  def sanitize(sender, recollection_page=nil, options={})
     self.switch_text(':name', sender.name)
 
     if recollection_page.present?

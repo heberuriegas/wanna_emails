@@ -74,3 +74,8 @@ senders.each do |sender|
   sender_entity = SenderEntity.where(name: sender[:name]).first_or_create
   sender_entity.update_attributes sender
 end
+
+PageType.where(name: 'Facebook Account').first_or_create
+PageType.where(name: 'Twitter Account').first_or_create
+PageType.where(name: 'LinkedIn Account').first_or_create
+PageType.where(name: 'Contact Page').first_or_create

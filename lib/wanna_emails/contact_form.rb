@@ -1,8 +1,10 @@
-require 'capybara'
-require 'capybara/dsl'
-require 'rubyfish'
+require "capybara"
+begin
+  require 'capybara-webkit'
+rescue LoadError => e
+end
 
-Capybara.default_driver = :selenium
+require 'rubyfish'
 
 module WannaEmails
   module ContactForm
@@ -12,32 +14,31 @@ module WannaEmails
     FIELDS_LIMIT ||= 2
     EXTENSIONS ||= ['','.html','.htm','.php','.jsp','.asp']
 
-    include Capybara::DSL
-
-    @@agent ||= Mechanize.new
-=begin
-    @@agent ||= TorPrivoxy::Agent.new(host: ENV['TOR_HOST'], password: ENV['TOR_PASSWORD'], privoxy_port: ENV['TOR_PRIVOXY_PORT'], control_port: ENV['TOR_CONTROL_PORT'], capybara: true) do |agent|
-      #puts "New IP is: #{agent.ip}"
-    end
-=end
-
     @@dictionary = YAML::load_file 'config/locales/dictionary.yml'
+
+    def samples
+      SAMPLES
+    end
 
     def current_page uri=nil
       @current_page = agent.get uri if uri.present?
       @current_page
     end
 
-    def samples
-      SAMPLES
-    end
-
     def reload_sample
       current_page samples.sample
     end
 
+    def session
+      @@session ||= Capybara::Session.new(:selenium)
+    end
+
+    def self.agent= agent
+      @@agent = agent
+    end
+
     def agent
-      @@agent
+      @@agent ||= Mechanize.new
     end
 
     def contact_page options={}
@@ -72,7 +73,10 @@ module WannaEmails
           search_terms.each do |search_term|
             valid_attributes.each do |valid_attribute|
               dictionary_items(search_term).each do |item|
-                fields = form.fields_with(valid_attribute => item).select{|field| field.type != "hidden"}
+                begin
+                  fields = form.fields_with(valid_attribute => item).select{|field| field.type != "hidden"}
+                rescue Exception => e
+                end
                 if fields.count >= FIELDS_LIMIT
                   result_form = form
                   throw :done
@@ -86,19 +90,20 @@ module WannaEmails
       result_form.present? ? result_form : temp_page.forms.try(:last)
     end
 
-    def fill_form form=contact_form, project=Project.all.sample, sender = Sender.new(generate: :ES)
+    def fill_form project=Project.all.sample, form=contact_form, sender = Sender.new(generate: :ES)
       fill_hash = form_fields form
 
-      visit form.page.uri.to_s
+      session.visit form.page.uri.to_s
       
       name = fill_hash[:last_name].present? ? sender.name.split(' ') : [sender.name]
+      message = project.messages.sample.sanitize(sender)
 
       # Fill name and lastname
       fill_field :name, name.first, fill_hash if fill_hash[:name].present?
       fill_field :last_name, name.last, fill_hash if fill_hash[:last_name].present?
       fill_field :email, sender.email, fill_hash if fill_hash[:email].present?
       fill_field :phone, Sender.mobile_number, fill_hash if fill_hash[:phone].present?
-      fill_field :message, project.messages.sample.text, fill_hash if fill_hash[:message].present?
+      fill_field :message, message.text, fill_hash if fill_hash[:message].present?
     end
 
     def form_fields form=contact_form
@@ -120,13 +125,13 @@ module WannaEmails
         if name_field.name[0..2] == 'FD:' || name_field.name == 'email_address_field'
           fill_dynamic_field name, value
         else
-          fill_in name_field.name, with: value
+          session.fill_in name_field.name, with: value
         end
       end
     end
 
     def fill_dynamic_field name, value
-      page.execute_script("$('div.label > span:contains(\"#{dictionary_items(name).first[1..-1]}\")').parent().next().children().attr('value','#{value}')")
+      session.execute_script("$('div.label > span:contains(\"#{dictionary_items(name).first[1..-1]}\")').parent().next().children().attr('value','#{value}')")
     end
 
     def contact_pages temp_page = current_page
@@ -145,7 +150,7 @@ module WannaEmails
         items.each do |item|
           EXTENSIONS.each do |extension|
             begin
-              contact_uri = agent.get("http://#{tmep_page.uri.host}/#{item}.#{extension}")
+              contact_uri = agent.get("http://#{temp_page.uri.host}/#{item}.#{extension}")
               links << contact_uri.to_s
               throw :done
             rescue Mechanize::ResponseCodeError => e
@@ -190,7 +195,10 @@ module WannaEmails
       items.each do |item|
         valid_attributes.each do |valid_attribute|
           forms.each do |form|
-            buttons.concat form.buttons_with(valid_attribute => /#{item}/i)
+            begin
+              buttons.concat form.buttons_with(valid_attribute => /#{item}/i)
+            rescue Exception => e
+            end
           end
         end
       end
@@ -207,36 +215,58 @@ module WannaEmails
     def find_fields items=[], form=contact_form
       raise("ContactForm: Form not exists") unless form.present?
       items = items.is_a?(Array) ? items : [items]
-      valid_attributes = [:id, :name, :text]
+      valid_attributes = [:id, :name]
       fields = []
 
       # Find with dictionary
       items.each do |item|
         valid_attributes.each do |valid_attribute|
-          fields.concat form.fields_with(valid_attribute => /#{item}/i).select{|field| field.type != "hidden"}
+          begin
+            fields.concat form.fields_with(valid_attribute => /#{item}/i).select{|field| field.type != "hidden"}
+          rescue Exception => e
+          end
         end
       end
 
       # Next of input to the element
       items.each do |item|
         temp_field = form.page.at("//*[contains(text(),'#{item[1..-1]}')]/following::input[@type!='hidden']")
-        fields.concat form.fields_with(name: temp_field.attributes["name"].value) if temp_field.present?
+        value = if temp_field.present? && temp_field.attributes["name"].present?
+          temp_field.attributes["name"].value
+        elsif temp_field.present? && temp_field.attributes["id"].present?
+          temp_field.attributes["id"].value
+        end
+          
+        fields.concat form.fields_with(name: value) if value.present?
       end if fields.empty?
+
+      temp_fields = []
+      temp_fields.concat form.page.search('input').map{ |node| Mechanize::Form::Field.new({'type' => node.attributes["type"].try(:value) || 'text', 'name' => node.attributes["name"].try(:value) || node.attributes["id"].try(:value) }) }
+      temp_fields.concat form.page.search('textarea').map{ |node| Mechanize::Form::Field.new({ 'type' => node.attributes["type"].try(:value) || 'text', 'name' => node.attributes["name"].try(:value) || node.attributes["id"].try(:value) }) }
+
+      # If mechanize dont recognize
+      catch :done do
+        items.each do |item|
+          valid_attributes.each do |valid_attribute|
+            temp_fields.select{|field| field.type != "hidden"}.each do |field|
+              if field.try(:name).present? && field.name.match(/#{item}/i)
+                fields << field
+                throw :done
+              end
+            end
+          end
+        end
+      end
 
       # Similarities with levensthein
       catch :done do
         items.each do |item|
-          form.fields.select{|field| field.type != "hidden"}.each do |field|
-            valid_attributes.each do |valid_attribute|
-              temp_item = valid_attribute == :id ? field.node.attributes[valid_attribute.to_s] : field.send(valid_attribute)
-              if levenstein(item, temp_item) <= DISTANCE
-                if field.try(:name).present?
-                  items << temp_item
-                  dictionary_upgrade
-                  links << link
-                  throw :done
-                end
-              end
+          temp_fields.select{|field| field.type != "hidden"}.each do |field|
+            if field.try(:name).present? && levenstein(item, field.name) <= DISTANCE
+              items << field.name
+              dictionary_upgrade
+              fields << field
+              throw :done
             end
           end
         end
@@ -253,7 +283,10 @@ module WannaEmails
 
       items.each do |item|
         valid_attributes.each do |valid_attribute|
-          links.concat temp_page.links_with(valid_attribute => /#{item}/i)
+          begin
+            links.concat temp_page.links_with(valid_attribute => /#{item}/i)
+          rescue Exception => e
+          end
         end
       end
 
