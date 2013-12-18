@@ -16,7 +16,6 @@ es:
   - lastname
   - last_name
   - segundo_nombre
-  - pagename
   email:
   - mail
   - email
