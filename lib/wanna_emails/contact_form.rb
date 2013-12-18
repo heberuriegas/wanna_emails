@@ -10,7 +10,7 @@ module WannaEmails
   module ContactForm
 
     SAMPLES ||= ['http://www.mananita.cl/','http://www.paramedicostens.cl/','http://www.coniana.cl/','http://www.novaelectric.cl/','http://www.comidasdelivery.cl','http://www.fasutosushi.cl/']
-    DISTANCE ||= 3
+    DISTANCE ||= 2
     FIELDS_LIMIT ||= 2
     EXTENSIONS ||= ['','.html','.htm','.php','.jsp','.asp']
 
@@ -47,7 +47,11 @@ module WannaEmails
       if options[:link]
         contact_page
       else
-        contact_page.present? ? contact_page.click : nil
+        if contact_page.present?
+          contact_page.is_a?(String) ? agent.get(contact_page) : contact_page.click
+        else
+          nil
+        end
       end
     end
 
@@ -77,7 +81,7 @@ module WannaEmails
                   fields = form.fields_with(valid_attribute => item).select{|field| field.type != "hidden"}
                 rescue Exception => e
                 end
-                if fields.count >= FIELDS_LIMIT
+                if fields.present? && fields.count >= FIELDS_LIMIT
                   result_form = form
                   throw :done
                 end
@@ -96,24 +100,39 @@ module WannaEmails
       session.visit form.page.uri.to_s
       
       name = fill_hash[:last_name].present? ? sender.name.split(' ') : [sender.name]
-      message = project.messages.sample.sanitize(sender)
+      message = project.messages.sample.sanitize(sender,nil, js: true)
 
       # Fill name and lastname
       fill_field :name, name.first, fill_hash if fill_hash[:name].present?
       fill_field :last_name, name.last, fill_hash if fill_hash[:last_name].present?
       fill_field :email, sender.email, fill_hash if fill_hash[:email].present?
-      fill_field :phone, Sender.mobile_number, fill_hash if fill_hash[:phone].present?
-      fill_field :message, message.text, fill_hash if fill_hash[:message].present?
+      fill_field :phone, Sender.mobile_number, fill_hash if fill_hash[:phone].present?      
+      begin
+        fill_field :message, message.text, fill_hash if fill_hash[:message].present?
+      rescue StandardError => e
+        if e.message.include?('unterminated string literal')
+          fill_field :message, message.text.gsub("\n", '\n'), fill_hash if fill_hash[:message].present?
+        else
+          raise 'Message can\'t fill'
+        end
+      end
     end
 
     def form_fields form=contact_form
-      form_fields = [:name, :last_name, :email, :phone, :message]
+      form_fields = [:message, :email, :name, :last_name, :phone]
 
       result = {}
-      dictionary_fields.each do |field,items|
-        if form_fields.include? field.to_sym
-          result[field.to_sym] = find_fields(items, form)
-        end
+      form_fields.each do |field|
+        items = dictionary_fields[field.to_s]
+        temp_fields = find_fields(items, form)
+        temp_fields.each do |temp_field|
+          result.each do |key, values|
+            values.each do |value|
+              temp_fields.delete temp_field if value.name == temp_field.name && temp_field.name[0..2] != 'FD:'
+            end
+          end
+        end 
+        result[field.to_sym] = temp_fields
       end
       result
     end
@@ -122,7 +141,7 @@ module WannaEmails
 
     def fill_field name, value, fill_hash
       fill_hash[name].each do |name_field|
-        if name_field.name[0..2] == 'FD:' || name_field.name == 'email_address_field'
+        if (name_field.name[0..2] == 'FD:' && name_field.name.length > 15) || name_field.name == 'email_address_field'
           fill_dynamic_field name, value
         else
           session.fill_in name_field.name, with: value
@@ -131,7 +150,8 @@ module WannaEmails
     end
 
     def fill_dynamic_field name, value
-      session.execute_script("$('div.label > span:contains(\"#{dictionary_items(name).first[1..-1]}\")').parent().next().children().attr('value','#{value}')")
+      session.execute_script("message_temp = '#{value}'")
+      session.execute_script("$('div.label > span:contains(\"#{dictionary_items(name).first[1..-1]}\")').parent().next().children().attr('value',message_temp)")
     end
 
     def contact_pages temp_page = current_page
@@ -150,7 +170,7 @@ module WannaEmails
         items.each do |item|
           EXTENSIONS.each do |extension|
             begin
-              contact_uri = agent.get("http://#{temp_page.uri.host}/#{item}.#{extension}")
+              contact_uri = agent.get("http://#{temp_page.uri.host}/#{item}#{extension}")
               links << contact_uri.to_s
               throw :done
             rescue Mechanize::ResponseCodeError => e
@@ -296,7 +316,7 @@ module WannaEmails
           temp_page.links.each do |link|
             valid_attributes.each do |valid_attribute|
               temp_item = valid_attribute == :text ? link.send(valid_attribute) : link.attributes[valid_attribute]
-              if levenstein(item, temp_item) <= DISTANCE
+              if levenstein(item, temp_item) <= DISTANCE && !dictionary_has?(temp_item)
                 if link.attributes[:href].present?
                   items << link.attributes[:href].split('/').last.split('.').first
                   dictionary_upgrade
@@ -310,6 +330,13 @@ module WannaEmails
       end if links.empty?
 
       links.uniq{ |link| link.href }
+    end
+
+    def dictionary_has? item
+      dictionary_fields.each do |key,value|
+        return true if key == item or value.include?(item)
+      end
+      false
     end
   end
 end
