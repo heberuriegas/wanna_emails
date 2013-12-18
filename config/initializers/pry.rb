@@ -1,3 +1,4 @@
+=begin
 if Rails.env.development? or Rails.env.test?
   WannaEmails::Application.configure do
     # Use Pry instead of IRB
@@ -10,3 +11,4 @@ if Rails.env.development? or Rails.env.test?
     end
   end
 end
+=end
