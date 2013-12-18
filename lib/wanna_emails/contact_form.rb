@@ -13,6 +13,7 @@ module WannaEmails
     DISTANCE ||= 2
     FIELDS_LIMIT ||= 2
     EXTENSIONS ||= ['','.html','.htm','.php','.jsp','.asp']
+    INCREASE_DICTIONARY = true
 
     @@dictionary = YAML::load_file 'config/locales/dictionary.yml'
 
@@ -318,8 +319,10 @@ module WannaEmails
               temp_item = valid_attribute == :text ? link.send(valid_attribute) : link.attributes[valid_attribute]
               if levenstein(item, temp_item) <= DISTANCE && !dictionary_has?(temp_item)
                 if link.attributes[:href].present?
-                  items << link.attributes[:href].split('/').last.split('.').first
-                  dictionary_upgrade
+                  if INCREASE_DICTIONARY
+                    items << link.attributes[:href].split('/').last.split('.').first
+                    dictionary_upgrade
+                  end
                   links << link
                   throw :done
                 end
