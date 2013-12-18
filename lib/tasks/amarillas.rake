@@ -101,9 +101,11 @@ namespace :amarillas do
         logger.info "== Visit: #{current_page.uri.to_s}"
 
         fill_form project
-        sleep 3
+        debugger
       rescue Exception => e
-        logger.error "== Error: #{e.message}"
+        logger.error "== Error: #{e.message}" unless e.message.include?('Connection refused') or e.message.include?('getaddrinfo') or e.message.include?('ContactForm')
+      ensure
+        session.reset_session!
       end
     end
   end
