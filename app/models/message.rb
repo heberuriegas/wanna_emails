@@ -19,6 +19,10 @@ class Message < ActiveRecord::Base
       self.switch_text "TradeGig.com",'www.TradeGig.com'
     end
 
+    if options[:js] == true
+      self.switch_text "\r\n","\n"
+    end
+
     self
   end
 
