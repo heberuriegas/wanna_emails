@@ -13,7 +13,7 @@ module WannaEmails
     DISTANCE ||= 2
     FIELDS_LIMIT ||= 2
     EXTENSIONS ||= ['','.html','.htm','.php','.jsp','.asp']
-    INCREASE_DICTIONARY = true
+    INCREASE_DICTIONARY ||= true
 
     @@dictionary = YAML::load_file 'config/locales/dictionary.yml'
 
@@ -80,7 +80,7 @@ module WannaEmails
               dictionary_items(search_term).each do |item|
                 begin
                   fields = form.fields_with(valid_attribute => item).select{|field| field.type != "hidden"}
-                rescue Exception => e
+                rescue StandardError => e
                 end
                 if fields.present? && fields.count >= FIELDS_LIMIT
                   result_form = form
@@ -117,6 +117,12 @@ module WannaEmails
           raise 'Message can\'t fill'
         end
       end
+      begin
+        form.radiobuttons.group_by{|t| t['name']}.each {|key,value| session.choose value.first.text || value.first.name }
+      rescue StandardError => e
+        raise 'Radio buttons can\'t fill'
+      end
+      find_submit form
     end
 
     def form_fields form=contact_form
@@ -218,7 +224,7 @@ module WannaEmails
           forms.each do |form|
             begin
               buttons.concat form.buttons_with(valid_attribute => /#{item}/i)
-            rescue Exception => e
+            rescue StandardError => e
             end
           end
         end
@@ -227,7 +233,7 @@ module WannaEmails
       buttons.uniq
     end
 
-    def find_submit forms=current_page.try(:forms)
+    def find_submit forms=contact_page.try(:forms)
       raise("ContactForm: Form not exists") unless forms.present?
       forms = forms.is_a?(Array) ? forms : [forms]
       find_buttons(dictionary_items(:submit), forms).sample
@@ -244,7 +250,7 @@ module WannaEmails
         valid_attributes.each do |valid_attribute|
           begin
             fields.concat form.fields_with(valid_attribute => /#{item}/i).select{|field| field.type != "hidden"}
-          rescue Exception => e
+          rescue StandardError => e
           end
         end
       end
@@ -306,7 +312,7 @@ module WannaEmails
         valid_attributes.each do |valid_attribute|
           begin
             links.concat temp_page.links_with(valid_attribute => /#{item}/i)
-          rescue Exception => e
+          rescue StandardError => e
           end
         end
       end
