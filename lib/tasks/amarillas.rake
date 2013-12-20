@@ -100,10 +100,10 @@ namespace :amarillas do
         current_page page.uri
         logger.info "== Visit: #{current_page.uri.to_s}"
 
-        send_button = fill_form project
+        send_button = fill_form project, contact_form, page        
         session.click_button send_button.value || send_button.name
         sleep 3
-        page.update_attribute :posted, true
+        Page.find(page.id).update_attribute :posted, true
         logger.info "==== Posted: #{current_page.uri.to_s}"
       rescue StandardError => e
         logger.error "== Error: #{e.message}" unless e.message.include?('Connection refused') or e.message.include?('getaddrinfo') or e.message.include?('ContactForm')

@@ -95,13 +95,15 @@ module WannaEmails
       result_form.present? ? result_form : temp_page.forms.try(:last)
     end
 
-    def fill_form project=Project.all.sample, form=contact_form, sender = Sender.new(generate: :ES)
+    def fill_form project=Project.all.sample, form=contact_form, page=current_page, sender=Sender.new(generate: :ES)
       fill_hash = form_fields form
 
       session.visit form.page.uri.to_s
       
       name = fill_hash[:last_name].present? ? sender.name.split(' ') : [sender.name]
-      message = project.messages.sample.sanitize(sender,nil, js: true)
+      temp_page = page.is_a?(Page) ? page : Page.find_by(uri: page.uri.to_s)
+      debugger
+      message = project.messages.sample.sanitize(sender,temp_page.recollection_pages.sample, js: true)
 
       # Fill name and lastname
       fill_field :name, name.first, fill_hash if fill_hash[:name].present?
