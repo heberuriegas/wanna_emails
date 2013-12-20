@@ -102,7 +102,6 @@ module WannaEmails
       
       name = fill_hash[:last_name].present? ? sender.name.split(' ') : [sender.name]
       temp_page = page.is_a?(Page) ? page : Page.find_by(uri: page.uri.to_s)
-      debugger
       message = project.messages.sample.sanitize(sender,temp_page.recollection_pages.sample, js: true)
 
       # Fill name and lastname
