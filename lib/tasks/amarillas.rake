@@ -101,7 +101,8 @@ namespace :amarillas do
           current_page page.uri
           logger.info "== Visit: #{current_page.uri.to_s}"
 
-          send_button = fill_form project, contact_form, page        
+          send_button = fill_form project, contact_form, page
+          sleep 5
           session.click_button send_button.value || send_button.name
           sleep 3
           Page.find(page.id).update_attribute :posted, true

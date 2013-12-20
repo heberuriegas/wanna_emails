@@ -40,6 +40,7 @@ es:
   - message
   - text
   - texto
+  - consulta
   submit:
   - submit
   - enviar
