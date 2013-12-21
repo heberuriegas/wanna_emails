@@ -123,7 +123,9 @@ module WannaEmails
       rescue StandardError => e
         raise 'Radio buttons can\'t fill'
       end
-      find_submit form
+      send_button = find_submit form
+      sleep 5
+      session.click_button send_button.value || send_button.name
     end
 
     def form_fields form=contact_form

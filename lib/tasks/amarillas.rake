@@ -101,9 +101,7 @@ namespace :amarillas do
           current_page page.uri
           logger.info "== Visit: #{current_page.uri.to_s}"
 
-          send_button = fill_form project, contact_form, page
-          sleep 5
-          session.click_button send_button.value || send_button.name
+          fill_form project, contact_form, page
           sleep 3
           Page.find(page.id).update_attribute :posted, true
           logger.info "==== Posted: #{current_page.uri.to_s}"
@@ -111,10 +109,11 @@ namespace :amarillas do
           logger.error "== Error: #{e.message}" unless e.message.include?('Connection refused') or e.message.include?('getaddrinfo') or e.message.include?('ContactForm')
         ensure
           begin
+            error = false
             session.reset_session!
           rescue Selenium::WebDriver::Error::UnhandledAlertError => e
-            session.reset_session!
-          end
+            error = true
+          end while error
         end
       end
     end
