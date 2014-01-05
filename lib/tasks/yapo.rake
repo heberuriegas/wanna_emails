@@ -82,6 +82,8 @@ namespace :yapo do
           rescue Exception => e
             logger.error "== Error: #{e.message}"
             agent.switch_circuit if args[:tor] == 'true'
+          ensure
+            reset_session!
           end    
         end
       rescue Exception => e
