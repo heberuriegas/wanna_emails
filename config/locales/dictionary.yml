@@ -6,6 +6,9 @@ es:
   - contacto
   - contactenos
   - contactos
+  - Cont%25C3%25A1ctenos
+  - Cont%C3%A1ctenos
+  - empresa_contato_localizacao
   name:
   - nombre
   - name
@@ -32,6 +35,7 @@ es:
   - phone
   - cellphone
   - cell_phone
+  - mail
   message:
   - comentarios
   - mensaje
@@ -41,6 +45,8 @@ es:
   - text
   - texto
   - consulta
+  - mansaje
+  - coment
   submit:
   - submit
   - enviar
