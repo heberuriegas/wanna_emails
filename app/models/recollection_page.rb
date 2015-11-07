@@ -6,6 +6,7 @@ class RecollectionPage < ActiveRecord::Base
   has_many :emails, through: :emails_recollection_pages, dependent: :destroy
 
   has_many :phones, dependent: :destroy
+  has_many :prospects, dependent: :destroy
 
   validates :emails_count, presence: true, numericality: true
 

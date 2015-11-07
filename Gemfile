@@ -59,7 +59,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'thin'
   gem 'faker'
-  gem 'debugger'
+  gem 'byebug'
   gem 'capybara-webkit', :require=>false
 end
 group :production do

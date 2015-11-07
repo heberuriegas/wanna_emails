@@ -11,7 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131209193411) do
+ActiveRecord::Schema.define(version: 20151104025300) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "campaigns", force: true do |t|
     t.string   "name"
@@ -34,6 +37,12 @@ ActiveRecord::Schema.define(version: 20131209193411) do
   end
 
   add_index "campaigns_recollections", ["campaign_id", "recollection_id"], name: "index_campaigns_recollections", unique: true, using: :btree
+
+  create_table "categories", force: true do |t|
+    t.string   "name",       limit: 75
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "emails", force: true do |t|
     t.string   "address"
@@ -93,9 +102,26 @@ ActiveRecord::Schema.define(version: 20131209193411) do
     t.integer  "recollection_page_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "prospect_id"
   end
 
+  add_index "phones", ["prospect_id"], name: "index_phones_on_prospect_id", using: :btree
   add_index "phones", ["recollection_page_id"], name: "index_phones_on_recollection_page_id", using: :btree
+
+  create_table "products", force: true do |t|
+    t.string   "name",       limit: 75
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "products_prospects", force: true do |t|
+    t.integer "product_id"
+    t.integer "prospect_id"
+  end
+
+  add_index "products_prospects", ["product_id", "prospect_id"], name: "index_products_prospects_on_product_id_and_prospect_id", unique: true, using: :btree
+  add_index "products_prospects", ["product_id"], name: "index_products_prospects_on_product_id", using: :btree
+  add_index "products_prospects", ["prospect_id"], name: "index_products_prospects_on_prospect_id", using: :btree
 
   create_table "projects", force: true do |t|
     t.string   "name"
@@ -103,6 +129,22 @@ ActiveRecord::Schema.define(version: 20131209193411) do
     t.datetime "updated_at"
     t.string   "language"
   end
+
+  create_table "prospects", force: true do |t|
+    t.string   "name",                 limit: 150
+    t.string   "address",              limit: 150
+    t.string   "hours",                limit: 150
+    t.integer  "category_id"
+    t.integer  "recollection_page_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "url"
+    t.string   "country",              limit: 75
+    t.string   "state",                limit: 75
+  end
+
+  add_index "prospects", ["category_id"], name: "index_prospects_on_category_id", using: :btree
+  add_index "prospects", ["recollection_page_id"], name: "index_prospects_on_recollection_page_id", using: :btree
 
   create_table "recollection_pages", force: true do |t|
     t.integer  "recollection_id"
