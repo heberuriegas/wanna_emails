@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151104025300) do
+ActiveRecord::Schema.define(version: 20151108035250) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,6 +52,15 @@ ActiveRecord::Schema.define(version: 20151104025300) do
   end
 
   add_index "emails", ["address"], name: "index_emails_on_address", using: :btree
+
+  create_table "emails_prospects", force: true do |t|
+    t.integer "email_id"
+    t.integer "prospect_id"
+  end
+
+  add_index "emails_prospects", ["email_id", "prospect_id"], name: "index_emails_prospects_on_email_id_and_prospect_id", unique: true, using: :btree
+  add_index "emails_prospects", ["email_id"], name: "index_emails_prospects_on_email_id", using: :btree
+  add_index "emails_prospects", ["prospect_id"], name: "index_emails_prospects_on_prospect_id", using: :btree
 
   create_table "emails_recollection_pages", primary_key: "[:email_id, :recollection_page_id]", force: true do |t|
     t.integer "email_id"
@@ -141,6 +150,7 @@ ActiveRecord::Schema.define(version: 20151104025300) do
     t.string   "url"
     t.string   "country",              limit: 75
     t.string   "state",                limit: 75
+    t.string   "postal_code"
   end
 
   add_index "prospects", ["category_id"], name: "index_prospects_on_category_id", using: :btree
