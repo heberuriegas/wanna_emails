@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151108212010) do
+ActiveRecord::Schema.define(version: 20151123232254) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -143,7 +143,7 @@ ActiveRecord::Schema.define(version: 20151108212010) do
     t.string   "name"
     t.string   "address"
     t.string   "hours"
-    t.integer  "category_id"
+    t.integer  "subcategory_id"
     t.integer  "recollection_page_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -151,10 +151,12 @@ ActiveRecord::Schema.define(version: 20151108212010) do
     t.string   "country",              limit: 75
     t.string   "state",                limit: 75
     t.string   "postal_code"
+    t.integer  "category_id"
   end
 
   add_index "prospects", ["category_id"], name: "index_prospects_on_category_id", using: :btree
   add_index "prospects", ["recollection_page_id"], name: "index_prospects_on_recollection_page_id", using: :btree
+  add_index "prospects", ["subcategory_id"], name: "index_prospects_on_subcategory_id", using: :btree
 
   create_table "recollection_pages", force: true do |t|
     t.integer  "recollection_id"
