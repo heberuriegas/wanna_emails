@@ -71,8 +71,11 @@ namespace :seccion_amarilla do
             prospect.country = 'México'
             prospect.url = current_page.uri.to_s
 
-            category_name = prospect_block.search('span.category').try(:first).try(:text).try(:strip)
+            category_name = args[:category].capitalize
             prospect.category = Category.where(name: category_name).first_or_create if category_name.present?
+
+            subcategory_name = prospect_block.search('span.category').try(:first).try(:text).try(:strip)
+            prospect.subcategory = Category.where(name: subcategory_name).first_or_create if subcategory_name.present?
 
             phone_numbers << prospect_block.search('span.tel').try(:text).try(:gsub, /tel:|mobile:/i,'').try(:gsub, /llama gratis/i, '').try(:gsub, /\*|•/i, '').try(:strip)
 
