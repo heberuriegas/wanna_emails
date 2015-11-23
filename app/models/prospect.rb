@@ -4,4 +4,8 @@ class Prospect < ActiveRecord::Base
   has_and_belongs_to_many :emails
   has_many :phones
   has_and_belongs_to_many :products
+
+  def flat_emails
+    emails.map(&:address).join(', ')
+  end
 end

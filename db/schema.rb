@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151108035250) do
+ActiveRecord::Schema.define(version: 20151108212010) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 20151108035250) do
   add_index "campaigns_recollections", ["campaign_id", "recollection_id"], name: "index_campaigns_recollections", unique: true, using: :btree
 
   create_table "categories", force: true do |t|
-    t.string   "name",       limit: 75
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -118,7 +118,7 @@ ActiveRecord::Schema.define(version: 20151108035250) do
   add_index "phones", ["recollection_page_id"], name: "index_phones_on_recollection_page_id", using: :btree
 
   create_table "products", force: true do |t|
-    t.string   "name",       limit: 75
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -140,9 +140,9 @@ ActiveRecord::Schema.define(version: 20151108035250) do
   end
 
   create_table "prospects", force: true do |t|
-    t.string   "name",                 limit: 150
-    t.string   "address",              limit: 150
-    t.string   "hours",                limit: 150
+    t.string   "name"
+    t.string   "address"
+    t.string   "hours"
     t.integer  "category_id"
     t.integer  "recollection_page_id"
     t.datetime "created_at"
