@@ -42,7 +42,7 @@ namespace :amarillas do
             
             business_page = Page.where(uri: "#{args[:url]}#{business_url.href}").first_or_create
 
-            unless business_page.posted == true
+            unless business_page.fetched == true
               current_page business_url.href
               logger.info "== Visit: #{current_page.uri.to_s}"
 
@@ -65,7 +65,7 @@ namespace :amarillas do
               recollection_page.phones << Phone.where(number: phone_number).first_or_create unless recollection_page.phones.pluck(:number).include?(phone_number) or !phone_number.present?
               logger.info "Phone: #{phone_number} recollected" if phone_number.present?
             
-              business_page.update_attribute :posted, true
+              business_page.update_attribute :fetched, true
           
               sleep 3
             end

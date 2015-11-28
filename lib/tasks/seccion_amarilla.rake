@@ -7,7 +7,7 @@ namespace :seccion_amarilla do
 
   desc "Generate data dummy for services"
   task :recollect, [:category, :state, :pages] => :environment do |t, args|
-    args.with_defaults project: 'Asurela - Arquitectos'
+    args.with_defaults project: 'Asurela - Comercio'
     args.with_defaults recollection: 'Sección amarilla'
     args.with_defaults url: 'http://www.seccionamarilla.com.mx/'
     args.with_defaults category: 'arquitectos'
@@ -26,7 +26,6 @@ namespace :seccion_amarilla do
     end
     project = Project.where(name: args[:project]).first_or_create
     recollection = Recollection.where(name: args[:recollection], project_id: project.id).first_or_create
-    page_type = PageType.where(name: 'Contact Page').first_or_create
 
     (pages[0].to_i...pages[1].to_i+1).each_with_index do |n,index|
       begin
@@ -38,8 +37,8 @@ namespace :seccion_amarilla do
 
         prospect_page = Page.where(uri: current_page_uri).first_or_create
 
-        if prospect_page.posted?
-          logger.info "== Skip Posted Page: #{prospect_page.uri}"
+        if prospect_page.fetched?
+          logger.info "== Skip Fetched Page: #{prospect_page.uri}"
           next
         end
 
@@ -134,7 +133,7 @@ namespace :seccion_amarilla do
             agent.switch_circuit if args[:tor] == 'true'
           end    
         end
-        prospect_page.update_attribute :posted, true
+        prospect_page.update_attribute :fetched, true
         sleep 3
       rescue Exception => e
         logger.error "== Error: #{e.message}"
@@ -146,7 +145,7 @@ namespace :seccion_amarilla do
 
   desc "Generate data dummy for services"
   task :post_messages, [:project] => :environment do |t, args|
-    args.with_defaults project: 'TradeGig Santiago Contact'
+    args.with_defaults project: 'Asurela - Comercio'
 
     logger = Logger.new("log/posts/#{args[:recollection].underscore.gsub(' ','_')}.log")
     logger.info "=============================== Run #{DateTime.now.to_s}"
