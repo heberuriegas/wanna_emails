@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151123232254) do
+ActiveRecord::Schema.define(version: 20151128053705) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -94,6 +94,7 @@ ActiveRecord::Schema.define(version: 20151123232254) do
     t.datetime "updated_at"
     t.boolean  "posted",       default: false
     t.integer  "page_type_id"
+    t.boolean  "fetched"
   end
 
   add_index "pages", ["page_type_id"], name: "index_pages_on_page_type_id", using: :btree
