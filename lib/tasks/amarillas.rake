@@ -101,7 +101,7 @@ namespace :amarillas do
           current_page page.uri
           logger.info "== Visit: #{current_page.uri.to_s}"
 
-          fill_form project, contact_form, page
+          fill_form project, page
           sleep 3
           Page.find(page.id).update_attribute :posted, true
           logger.info "==== Posted: #{current_page.uri.to_s}"

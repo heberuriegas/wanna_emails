@@ -1,6 +1,7 @@
 class Page < ActiveRecord::Base
   has_many :recollection_pages
   has_many :recollections, through: :recollection_pages
+  belongs_to :page_type
 
   validates :host, presence: true
   validates :uri, presence: true

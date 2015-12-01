@@ -15,7 +15,9 @@ module WannaEmails
     EXTENSIONS ||= ['','.html','.htm','.php','.jsp','.asp']
     INCREASE_DICTIONARY ||= true
 
-    @@dictionary = YAML::load_file 'config/locales/dictionary.yml'
+    @@dictionary = 'config/locales/dictionary.yml'
+    @@dynamic_fill = true
+    @@dictionary_locale = :es
 
     def samples
       SAMPLES
@@ -95,34 +97,46 @@ module WannaEmails
       result_form.present? ? result_form : temp_page.forms.try(:last)
     end
 
-    def fill_form project=Project.all.sample, form=contact_form, page=current_page, sender=Sender.new(generate: :ES)
+    # project is the current project working
+    # page is a ActiveRecord::Base Page with recollection_pages
+    # form is the mechanize page with the form
+    # sender is a Sender
+    def fill_form project=Project.all.sample, page=current_page, form=contact_form, sender=Sender.new(generate: @@dictionary_locale.upcase)
       fill_hash = form_fields form
 
       session.visit form.page.uri.to_s
-      
+
       name = fill_hash[:last_name].present? ? sender.name.split(' ') : [sender.name]
       temp_page = page.is_a?(Page) ? page : Page.find_by(uri: page.uri.to_s)
-      message = project.messages.sample.sanitize(sender,temp_page.recollection_pages.sample, js: true)
+      message = project.messages.sample.try(:sanitize, sender,temp_page.recollection_pages.sample, js: true)
 
       # Fill name and lastname
-      fill_field :name, name.first, fill_hash if fill_hash[:name].present?
-      fill_field :last_name, name.last, fill_hash if fill_hash[:last_name].present?
-      fill_field :email, sender.email, fill_hash if fill_hash[:email].present?
-      fill_field :phone, Sender.mobile_number, fill_hash if fill_hash[:phone].present?      
-      begin
-        fill_field :message, message.text, fill_hash if fill_hash[:message].present?
-      rescue StandardError => e
-        if e.message.include?('unterminated string literal')
-          fill_field :message, message.text.gsub("\n", '\n'), fill_hash if fill_hash[:message].present?
-        else
-          raise 'Message can\'t fill'
+      if @@dynamic_fill
+        fill_field :name, name.first, fill_hash if fill_hash[:name].present?
+        fill_field :last_name, name.last, fill_hash if fill_hash[:last_name].present?
+        fill_field :email, sender.email, fill_hash if fill_hash[:email].present?
+        fill_field :phone, Sender.mobile_number, fill_hash if fill_hash[:phone].present?      
+        begin
+          fill_field :message, message.text, fill_hash if fill_hash[:message].present?
+        rescue StandardError => e
+          if e.message.include?('unterminated string literal')
+            fill_field :message, message.text.gsub("\n", '\n'), fill_hash if fill_hash[:message].present?
+          else
+            raise 'Message can\'t fill'
+          end
         end
+        begin
+          form.radiobuttons.group_by{|t| t['name']}.each {|key,value| session.choose value.first.text || value.first.name }
+        rescue StandardError => e
+          raise 'Radio buttons can\'t fill'
+        end
+      else
+        session.fill_in dictionary_fields['name'].try(:first), with: sender.name
+        session.fill_in dictionary_fields['email'].try(:first), with: sender.email
+        session.fill_in dictionary_fields['phone'].try(:first), with: Sender.mobile_number
+        session.fill_in dictionary_fields['message'].try(:first), with: message.text
       end
-      begin
-        form.radiobuttons.group_by{|t| t['name']}.each {|key,value| session.choose value.first.text || value.first.name }
-      rescue StandardError => e
-        raise 'Radio buttons can\'t fill'
-      end
+
       send_button = find_submit form
       sleep 5
       session.click_button send_button.value || send_button.name
@@ -193,20 +207,16 @@ module WannaEmails
       links.uniq{ |link| link.href }
     end
 
-    def dictionary
-      @@dictionary = YAML::load_file 'config/locales/dictionary.yml'
+    def dictionary_fields
+      @@dictionary
     end
 
-    def dictionary_fields language=:es
-      @@dictionary[language.to_s.downcase]
-    end
-
-    def dictionary_items field, language=:es
-      @@dictionary[language.to_s.downcase][field.to_s]
+    def dictionary_items field
+      dictionary_fields[field.to_s]
     end
 
     def dictionary_upgrade
-      File.open('config/locales/dictionary.yml','w') do |file|
+      File.open(@@dictionary,'w') do |file|
         file.write @@dictionary.to_yaml
       end
     end

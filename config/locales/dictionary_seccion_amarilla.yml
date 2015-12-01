@@ -1,0 +1,13 @@
+---
+name:
+- email
+email:
+- phone
+phone:
+- name
+message:
+- message
+submit:
+- submit
+- enviar
+- envia
