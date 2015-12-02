@@ -15,7 +15,7 @@ module WannaEmails
     EXTENSIONS ||= ['','.html','.htm','.php','.jsp','.asp']
     INCREASE_DICTIONARY ||= true
 
-    @@dictionary = 'config/locales/dictionary.yml'
+    @@dictionary = 'config/dictionary.yml'
     @@dynamic_fill = true
     @@dictionary_locale = :es
 

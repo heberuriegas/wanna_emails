@@ -161,7 +161,7 @@ namespace :seccion_amarilla do
     page_type = PageType.where(name: 'Contact Page').first_or_create
 
     include WannaEmails::ContactForm
-    @@dictionary =  YAML::load_file 'config/locales/dictionary_seccion_amarilla.yml'
+    @@dictionary =  YAML::load_file 'config/dictionary_seccion_amarilla.yml'
     @@dynamic_fill = false
 
     project = Project.where(name: args[:project]).first_or_create
