@@ -46,25 +46,30 @@ namespace :outlook_accounts do
 
         sender = Sender.new(generate: :ES, sender_entity: SenderEntity.find_by(name: 'Outlook'))
 
-        fill_in 'iFirstName', with: sender.name.split(' ').first
-        fill_in 'iLastName', with: sender.name.split(' ').last
-        select Date::MONTHNAMES[rand(11)+1], from: 'iBirthMonth'
-        select (rand(29)+1).to_s, from: 'iBirthDay'
-        select (rand(20)+1970).to_s, from: 'iBirthYear'
-        select 'Not specified', from: 'iGender'
-        #click_link 'iliveswitch'
-        fill_in 'imembernamelive', with: sender.email.split('@').first
+        fill_in 'FirstName', with: sender.name.split(' ').first
+        fill_in 'LastName', with: sender.name.split(' ').last
+        fill_in 'MemberName', with: sender.email.split('@').first
         sender.email = "#{sender.email.split('@').first}@outlook.com"
-        fill_in 'iPwd', with: sender.password
-        fill_in 'iRetypePwd', with: sender.password
-        select 'Chile ‏(‎+56)', from: 'iSMSCountry'
-        fill_in 'iPhone', with: Sender.mobile_number
-        click_link 'iqsaswitch'
-        select 'Name of first pet', from: 'iSQ'
-        fill_in 'iSA', with: 'Scooby Doo'
-        select 'Chile', from: 'iCountry'
-        sleep 2
-        fill_in 'iZipCode', with: (rand(100)+1240000).to_s
+        fill_in 'Password', with: sender.password
+        fill_in 'RetypePassword', with: sender.password
+        select 'Mexico', from: 'Country'
+
+        select Date::MONTHNAMES[rand(11)+1], from: 'BirthMonth'
+        select (rand(29)+1).to_s, from: 'BirthDay'
+        select (rand(20)+1970).to_s, from: 'BirthYear'
+        select 'Not specified', from: 'Gender'
+        #click_link 'iliveswitch'
+        
+        
+        select 'Mexico ‏(‎+52)', from: 'PhoneCountry'
+        fill_in 'PhoneNumber', with: Sender.mobile_number
+        
+        #click_link 'iqsaswitch'
+        #select 'Name of first pet', from: 'iSQ'
+        #fill_in 'iSA', with: 'Scooby Doo'
+        
+        #sleep 2
+        #fill_in 'iZipCode', with: (rand(100)+1240000).to_s
         
         debugger
         #sender.save! Set captcha and save manually
