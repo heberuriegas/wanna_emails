@@ -17,7 +17,7 @@ module WannaEmails
 
     @@dictionary = 'config/dictionary.yml'
     @@dynamic_fill = true
-    @@dictionary_locale = :es
+    @@dictionary_locale = :MX
 
     def samples
       SAMPLES
@@ -115,7 +115,7 @@ module WannaEmails
         fill_field :name, name.first, fill_hash if fill_hash[:name].present?
         fill_field :last_name, name.last, fill_hash if fill_hash[:last_name].present?
         fill_field :email, sender.email, fill_hash if fill_hash[:email].present?
-        fill_field :phone, Sender.mobile_number, fill_hash if fill_hash[:phone].present?      
+        fill_field :phone, Sender.mobile_number(@@dictionary_locale), fill_hash if fill_hash[:phone].present?      
         begin
           fill_field :message, message.text, fill_hash if fill_hash[:message].present?
         rescue StandardError => e

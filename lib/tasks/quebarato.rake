@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require "capybara"
 require "capybara/dsl"
@@ -13,7 +13,7 @@ namespace :quebarato do
 
   desc "Generate data dummy for services"
   task :post_messages, [:project, :recollection, :url, :pages, :tor] => :environment do |t, args|
-    args.with_defaults project: 'TradeGig Santiago Posts'
+    args.with_defaults project: 'Asurela Santiago Posts'
     args.with_defaults recollection: 'Quebarato'
     args.with_defaults url: 'http://www.quebarato.cl/servicios.html?of=1'
     args.with_defaults pages: '1-754'

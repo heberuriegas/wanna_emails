@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require 'wanna_emails/contact_form'
 

@@ -1,6 +1,6 @@
 # encoding: utf-8
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require "capybara"
 require "capybara/dsl"
@@ -44,7 +44,7 @@ namespace :outlook_accounts do
         visit "https://outlook.com"
         click_link 'Sign up now'
 
-        sender = Sender.new(generate: :ES, sender_entity: SenderEntity.find_by(name: 'Outlook'))
+        sender = Sender.new(generate: :MX, sender_entity: SenderEntity.find_by(name: 'Outlook'))
 
         fill_in 'FirstName', with: sender.name.split(' ').first
         fill_in 'LastName', with: sender.name.split(' ').last

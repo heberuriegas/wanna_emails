@@ -92,6 +92,6 @@ class RecollectionsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def recollection_params
-      params.require(:recollection).permit(:name, :address, :search_by_city, :latitude, :longitude, :goal, :search).merge!(default_params)
+      params.require(:recollection).permit(:name, :name_label, :address, :search_by_city, :latitude, :longitude, :goal, :search).merge!(default_params)
     end
 end

@@ -4,18 +4,31 @@ class Sender < ActiveRecord::Base
   has_many :sent_emails
 
   LANGUAGES = [:ES,:EN]
+
+  COUNTRIES = {
+    MX: 'ES',
+    CL: 'ES',
+    US: 'EN'
+  }
+
+  FAKER_SENDER = {
+    MX: FFaker::NameMX,
+    CL: FFaker::NameMX,
+    US: FFaker::Name,
+  }
+
   DOMAINS = ['@yahoo.com','@gmail.com','@hotmail.com','@outlook.com']
   LIMIT = 500
 
-  def generate=(language)
-    if LANGUAGES.include?(language)
-      name = Sender.names(language).sample
-      last_name = Sender.last_names(language).sample
+  def generate=(country = 'US')
+    if COUNTRIES.map{|k,v| k.to_s}.include?(country.to_s)
+      name = FAKER_SENDER[country.to_sym].first_name
+      last_name = FAKER_SENDER[country.to_sym].last_name
 
       self.name = "#{name.capitalize} #{last_name.capitalize}"
-      self.email = "#{name.underscore}#{last_name.underscore}#{rand(1000).to_s}#{self.domain}".gsub('Ñ','n').gsub('ñ','n')
+      self.email = "#{name.underscore}#{last_name.underscore}#{rand(1000).to_s}#{self.domain}".gsub('Ñ','n').gsub('ñ','n').gsub('á', 'a').gsub('é', 'e').gsub('í', 'i').gsub('ó', 'o').gsub('ú', 'u')
       self.password = ENV['ACCOUNTS_PASSWORD']
-      self.language = language.to_s
+      self.language = COUNTRIES[country.to_sym].to_s
     end
   end
 
@@ -55,9 +68,11 @@ class Sender < ActiveRecord::Base
   end
 
   def self.mobile_number(options={})
-    options.reverse_merge!(country: :CL, prefix: false)
+    options.reverse_merge!(country: :MX, prefix: false)
     mobile_numbers = {
-      CL: lambda { "#{options[:prefix] == true ? '+56' : ''}9512217#{rand(9)}#{rand(9)}" }
+      MX: lambda { FFaker::PhoneNumberMX.home_work_phone_number },
+      CL: lambda { "#{options[:prefix] == true ? '+56' : ''}9512217#{rand(9)}#{rand(9)}" },
+      US: lambda { FFaker::PhoneNumber.short_phone_number }
     }
     mobile_numbers[options[:country]].try(:call)
   end

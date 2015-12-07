@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require 'wanna_emails/contact_form'
 
@@ -7,7 +7,7 @@ namespace :amarillas do
 
   desc "Generate data dummy for services"
   task :recollect, [:section, :pages] => :environment do |t, args|
-    args.with_defaults project: 'TradeGig Santiago Contact'
+    args.with_defaults project: 'Asurela Santiago Contact'
     args.with_defaults recollection: 'Amarillas'
     args.with_defaults url: 'http://www.amarillas.cl/'
     args.with_defaults section: 'b/a-domicilio/'
@@ -83,7 +83,7 @@ namespace :amarillas do
 
   desc "Generate data dummy for services"
   task :post_messages, [:project] => :environment do |t, args|
-    args.with_defaults project: 'TradeGig Santiago Contact'
+    args.with_defaults project: 'Asurela Santiago Contact'
 
     logger = Logger.new("log/posts/amarillas_posts.log")
     logger.info "=============================== Run #{DateTime.now.to_s}"

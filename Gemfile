@@ -36,6 +36,7 @@ gem 'tor'
 gem 'tor-privoxy', git: 'https://github.com/woohoou/tor-privoxy.git'  
 gem 'faraday'
 gem 'rubyfish'
+gem 'ffaker'
 group :assets do
   gem 'therubyracer', :platform=>:ruby
 end
@@ -58,7 +59,6 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails'
   gem 'thin'
-  gem 'faker'
   gem 'byebug'
   gem 'capybara-webkit', :require=>false
 end

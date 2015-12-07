@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require "capybara"
 require "capybara/dsl"
@@ -45,7 +45,7 @@ namespace :google_accounts do
         visit "https://gmail.com"
         click_link 'gmail-create-account'
         
-        sender = Sender.new(generate: :ES, sender_entity: SenderEntity.find_by(name: 'Gmail'))
+        sender = Sender.new(generate: :MX, sender_entity: SenderEntity.find_by(name: 'Gmail'))
         fill_in 'FirstName', with: sender.name.split(' ').first
         fill_in 'LastName', with: sender.name.split(' ').last
         fill_in 'GmailAddress', with: sender.email.split('@').first

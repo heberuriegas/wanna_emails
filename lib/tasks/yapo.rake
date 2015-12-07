@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require "capybara"
 require "capybara/dsl"
@@ -13,7 +13,7 @@ namespace :yapo do
 
   desc "Generate data dummy for services"
   task :post_messages, [:project, :recollection, :url, :pages, :tor] => :environment do |t, args|
-    args.with_defaults project: 'TradeGig Santiago Posts'
+    args.with_defaults project: 'Asurela Santiago Posts'
     args.with_defaults recollection: 'Yapo'
     args.with_defaults url: 'http://www.yapo.cl/region_metropolitana/servicios_negocios_empleo?ca=15_s&cg=7000'
     args.with_defaults pages: '1-2'
@@ -65,7 +65,7 @@ namespace :yapo do
             unless contact_page.posted == true                
                 recollection_page = RecollectionPage.where(recollection_id: recollection.id, page_id: contact_page.id).first_or_create
                 
-                sender = Sender.new(generate: :ES)
+                sender = Sender.new(generate: :CL)
                 visit contact_url
                 logger.info "Visit: #{contact_url}"
                 fill_in 'adreply_body', with: project.messages.sample.text.gsub(':name', sender.name).gsub(':recollection_name', recollection.name).gsub(':url', service_url)

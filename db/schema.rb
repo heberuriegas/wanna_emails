@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151128053705) do
+ActiveRecord::Schema.define(version: 20151207221219) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -190,6 +190,7 @@ ActiveRecord::Schema.define(version: 20151128053705) do
     t.string   "country_code"
     t.boolean  "search_by_city", default: false
     t.boolean  "unique_pages",   default: false
+    t.string   "name_label"
   end
 
   add_index "recollections", ["project_id"], name: "index_recollections_on_project_id", using: :btree

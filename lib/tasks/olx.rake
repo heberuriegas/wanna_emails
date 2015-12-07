@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require "capybara"
 require "capybara/dsl"
@@ -13,7 +13,7 @@ namespace :olx do
 
   desc "Generate data dummy for services"
   task :post_messages, [:project, :recollection, :url, :pages, :tor] => :environment do |t, args|
-    args.with_defaults project: 'TradeGig Santiago Posts'
+    args.with_defaults project: 'Asurela Santiago Posts'
     args.with_defaults recollection: 'Olx'
     args.with_defaults url: 'http://www.olx.cl/servicios-cat-191'
     args.with_defaults pages: '1-2'
@@ -62,7 +62,7 @@ namespace :olx do
                 visit(service_url)
                 logger.info "Visit: #{service_url}"
 
-                sender = Sender.new(generate: :ES)
+                sender = Sender.new(generate: :CL)
                 recollection_page_emails = RecollectionPage.where(recollection_id: recollection.id, page_id: Page.where(uri: service_url).first_or_create.id).first_or_create
                 email_recollector.recollect_emails body: body, title: title, uri: URI.parse(service_url)
                 phone_number = all(:xpath, "//li[@class='phone']//strong").map{|t| t.text}.first

@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require "capybara"
 require "capybara/dsl"
@@ -41,7 +41,7 @@ namespace :yahoo_accounts do
 
         visit "https://edit.yahoo.com/registration?intl=#{args[:language]}"
 
-        sender = Sender.new(generate: :ES, sender_entity: SenderEntity.find_by(name: 'Yahoo'))
+        sender = Sender.new(generate: :MX, sender_entity: SenderEntity.find_by(name: 'Yahoo'))
 
         fill_in 'firstname', with: sender.name.split(' ').first
         fill_in 'secondname', with: sender.name.split(' ').last

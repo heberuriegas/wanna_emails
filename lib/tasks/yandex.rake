@@ -1,5 +1,5 @@
 # Execute with: 
-# rake olx:post_messages["TradeGig Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
+# rake olx:post_messages["Asurela Santiago Posts",Olx,"http://www.olx.cl/servicios-cat-191",1-2,false]
 
 require "capybara"
 require "capybara/dsl"
@@ -40,7 +40,7 @@ namespace :yandex_accounts do
 
         visit "https://passport.yandex.com/registration"
 
-        sender = Sender.new(generate: :ES, sender_entity: SenderEntity.find_by(name: 'Yandex'))
+        sender = Sender.new(generate: :CL, sender_entity: SenderEntity.find_by(name: 'Yandex'))
 
         fill_in 'firstname', with: sender.name.split(' ').first
         fill_in 'lastname', with: sender.name.split(' ').last
