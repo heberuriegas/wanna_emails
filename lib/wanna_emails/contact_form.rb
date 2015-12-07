@@ -115,7 +115,7 @@ module WannaEmails
         fill_field :name, name.first, fill_hash if fill_hash[:name].present?
         fill_field :last_name, name.last, fill_hash if fill_hash[:last_name].present?
         fill_field :email, sender.email, fill_hash if fill_hash[:email].present?
-        fill_field :phone, Sender.mobile_number(@@dictionary_locale), fill_hash if fill_hash[:phone].present?      
+        fill_field :phone, Sender.mobile_number(country: @@dictionary_locale), fill_hash if fill_hash[:phone].present?      
         begin
           fill_field :message, message.text, fill_hash if fill_hash[:message].present?
         rescue StandardError => e
@@ -133,7 +133,7 @@ module WannaEmails
       else
         session.fill_in dictionary_fields['name'].try(:first), with: sender.name
         session.fill_in dictionary_fields['email'].try(:first), with: sender.email
-        session.fill_in dictionary_fields['phone'].try(:first), with: Sender.mobile_number
+        session.fill_in dictionary_fields['phone'].try(:first), with: Sender.mobile_number(country: @@dictionary_locale)
         session.fill_in dictionary_fields['message'].try(:first), with: message.text
       end
 
