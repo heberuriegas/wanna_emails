@@ -138,8 +138,9 @@ module WannaEmails
       end
 
       send_button = find_submit form
-      sleep 5
+      sleep 3
       session.click_button send_button.value || send_button.name
+      sleep 5
     end
 
     def form_fields form=contact_form

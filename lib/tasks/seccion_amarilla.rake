@@ -178,7 +178,6 @@ namespace :seccion_amarilla do
           super_page_link = current_page.search('a.super_pagina').first
           if super_page_link.present? && super_page_link['href'].present? && super_page_section = Mechanize::Page::Link.new(super_page_link,agent,current_page).click rescue nil && super_page_section.present?
             fill_form project, page, contact_form(super_page_section)
-            sleep 3
             Page.find(page.id).update_attribute :posted, true
             logger.info "==== Super page found, Posted: #{current_page.uri.to_s}"
           else
