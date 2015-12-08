@@ -107,20 +107,22 @@ module WannaEmails
       session.visit form.page.uri.to_s
 
       name = fill_hash[:last_name].present? ? sender.name.split(' ') : [sender.name]
+      email = sender.email
+
       temp_page = page.is_a?(Page) ? page : Page.find_by(uri: page.uri.to_s)
-      message = project.messages.sample.try(:sanitize, sender,temp_page.recollection_pages.sample, js: true)
+      message_text = project.messages.reload.sample.try(:sanitize, sender, temp_page.recollection_pages.sample, js: true).try(:text)
 
       # Fill name and lastname
       if @@dynamic_fill
         fill_field :name, name.first, fill_hash if fill_hash[:name].present?
         fill_field :last_name, name.last, fill_hash if fill_hash[:last_name].present?
-        fill_field :email, sender.email, fill_hash if fill_hash[:email].present?
+        fill_field :email, email, fill_hash if fill_hash[:email].present?
         fill_field :phone, Sender.mobile_number(country: @@dictionary_locale), fill_hash if fill_hash[:phone].present?      
         begin
-          fill_field :message, message.text, fill_hash if fill_hash[:message].present?
+          fill_field :message, message_text, fill_hash if fill_hash[:message].present?
         rescue StandardError => e
           if e.message.include?('unterminated string literal')
-            fill_field :message, message.text.gsub("\n", '\n'), fill_hash if fill_hash[:message].present?
+            fill_field :message, message_text.gsub("\n", '\n'), fill_hash if fill_hash[:message].present?
           else
             raise 'Message can\'t fill'
           end
@@ -131,10 +133,10 @@ module WannaEmails
           raise 'Radio buttons can\'t fill'
         end
       else
-        session.fill_in dictionary_fields['name'].try(:first), with: sender.name
-        session.fill_in dictionary_fields['email'].try(:first), with: sender.email
+        session.fill_in dictionary_fields['name'].try(:first), with: name.first+' '+name.last
+        session.fill_in dictionary_fields['email'].try(:first), with: email
         session.fill_in dictionary_fields['phone'].try(:first), with: Sender.mobile_number(country: @@dictionary_locale)
-        session.fill_in dictionary_fields['message'].try(:first), with: message.text
+        session.fill_in dictionary_fields['message'].try(:first), with: message_text
       end
 
       send_button = find_submit form
