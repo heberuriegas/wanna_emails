@@ -20,7 +20,7 @@ WannaEmails::Application.configure do
   # config.action_dispatch.rack_cache = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this).
-  config.serve_static_assets = true
+  config.serve_static_assets = false
 
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
@@ -73,6 +73,7 @@ WannaEmails::Application.configure do
   config.active_support.deprecation = :notify
   config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :smtp
+  config.action_mailer.logger = Logger.new("log/mailer.log")
 
   # Disable automatic flushing of the log to improve performance.
   # config.autoflush_log = false
