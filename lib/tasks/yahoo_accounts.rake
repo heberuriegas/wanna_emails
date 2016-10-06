@@ -28,7 +28,6 @@ namespace :yahoo_accounts do
     agent = TorPrivoxy::Agent.new host: ENV['TOR_HOST'], password: ENV['TOR_PASSWORD'], privoxy_port: ENV['TOR_PRIVOXY_PORT'], control_port: ENV['TOR_CONTROL_PORT'], capybara: true do |agent|
       logger.info "New IP is #{agent.ip}"
     end
-
     (0...args[:n].to_i).each_with_index do |n,index|
       begin
         if Capybara.current_driver == :webkit
@@ -58,7 +57,6 @@ namespace :yahoo_accounts do
         find(:xpath, "//label[@for='#{['male','female'].sample}']").click
         
         find(:xpath, "//button[@class='submit']").click
-        debugger
         #sender.save! Set captcha and save manually
         logger.info "== Sender #{sender.email} created!"
       rescue Exception => e
