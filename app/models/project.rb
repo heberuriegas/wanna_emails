@@ -31,9 +31,9 @@ class Project < ActiveRecord::Base
       _prospects << recollection_page.prospects
     end
 
-    _pages.each { |t| t.destroy }
-    _prospects.each { |t| t.destroy }
-    _recollection_pages.each { |t| t.destroy }
-    _recollections.each { |t| t.destroy }
+    _pages.uniq.each { |t| t.destroy }
+    _prospects.uniq.each { |t| t.destroy }
+    _recollection_pages.uniq.each { |t| t.destroy }
+    _recollections.uniq.each { |t| t.destroy }
   end
 end

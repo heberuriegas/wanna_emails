@@ -25,7 +25,11 @@ namespace :seccion_amarilla do
       puts "New IP is: #{agent.ip}"
     end
     project = Project.where(name: args[:project]).first_or_create
+    campaign = Campaign.where(name: (args[:category]+' '+args[:state]).gsub('-', ' ').titleize, project: project, user: User.first).first_or_create
+
     recollection = Recollection.where(name: args[:recollection], project_id: project.id).first_or_create
+    campaign.recollections << recollection
+
     (pages[0].to_i...pages[1].to_i+1).each_with_index do |n,index|
       begin
         logger.info "==== Start Page: #{n}"
