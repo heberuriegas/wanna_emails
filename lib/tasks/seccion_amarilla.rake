@@ -26,29 +26,24 @@ namespace :seccion_amarilla do
     end
     project = Project.where(name: args[:project]).first_or_create
     recollection = Recollection.where(name: args[:recollection], project_id: project.id).first_or_create
-
     (pages[0].to_i...pages[1].to_i+1).each_with_index do |n,index|
       begin
         logger.info "==== Start Page: #{n}"
         agent.switch_circuit if index % 3 == 3
         current_page_uri = "#{args[:url]}resultados/#{args[:category]}/#{args[:state].present? ? args[:state]+'/' : ''}#{n}"
-
         current_page current_page_uri rescue next
         logger.info "== Visit Page: #{current_page_uri}"
 
         list_page_type = PageType.where(name: 'List Page').first_or_create
         contact_page_type = PageType.where(name: 'Contact Page').first_or_create
-
         prospect_page = Page.where(uri: current_page_uri, page_type: list_page_type).first_or_create
-
         if prospect_page.fetched?
           logger.info "== Skip Fetched Page: #{prospect_page.uri}"
           next
         end
 
         recollection_page = RecollectionPage.where(recollection_id: recollection.id, page_id: prospect_page.id).first_or_create
-
-        prospects = current_page.search('ul li.vcard')
+        prospects = current_page.search('ul.list li')
 
         logger.info "== #{n} prospects finded"
 
@@ -60,29 +55,28 @@ namespace :seccion_amarilla do
             product_names = []
 
             prospect = Prospect.new
-
-            prospect_name = prospect_block.search('h3').try(:first).try(:text).try(:strip)
+            prospect_name = prospect_block.search('span[itemprop="name"]').try(:first).try(:text).try(:strip)
 
             logger.info "==== Start scrap prospect: #{prospect_name}"
 
             prospect.recollection_page = recollection_page
 
             prospect.name = prospect_name
-            prospect.address = prospect_block.search('span.street-address').try(:first).try(:text).try(:strip)
-            prospect.postal_code = prospect_block.search('span.postal-code').try(:first).try(:text).try(:gsub, ',', '').try(:strip)
-            prospect.state = prospect_block.search('span.locality acronym').try(:first).try(:text).try(:strip)
+            prospect.address = prospect_block.search('.l-address').try(:first).try(:text).try(:strip)
+            prospect.postal_code = prospect_block.search('span[itemprop="postalCode"]').try(:first).try(:text).try(:gsub, ',', '').try(:strip)
+            prospect.state = prospect_block.search('span[itemprop="addressRegion"]').try(:first).try(:text).try(:strip)
             prospect.country = 'México'
             prospect.url = current_page.uri.to_s
 
             category_name = args[:category].capitalize
             prospect.category = Category.where(name: category_name).first_or_create if category_name.present?
 
-            subcategory_name = prospect_block.search('span.category').try(:first).try(:text).try(:strip)
+            subcategory_name = prospect_block.search('span[itemprop="category"]').try(:first).try(:text).try(:strip)
             prospect.subcategory = Category.where(name: subcategory_name).first_or_create if subcategory_name.present?
 
-            phone_numbers << prospect_block.search('span.tel').try(:text).try(:gsub, /tel:|mobile:/i,'').try(:gsub, /llama gratis/i, '').try(:gsub, /\*|•/i, '').try(:strip)
+            phone_numbers << prospect_block.search('span[itemprop="telephone"]').try(:text).try(:gsub, /tel:|mobile:/i,'').try(:gsub, /llama gratis/i, '').try(:gsub, /\*|•/i, '').try(:strip)
 
-            prospect_link = prospect_block.search('a.mas_info').first
+            prospect_link = prospect_block.search('span.icon-more-info').try(:first).try(:parent)
 
             if prospect_link.present? && prospect_link['href'].present? && info_section = Mechanize::Page::Link.new(prospect_link,agent,current_page).click rescue nil && info_section.present?
               contact_page = Page.where(uri: info_section.uri.to_s, page_type: contact_page_type).first_or_create
@@ -91,16 +85,16 @@ namespace :seccion_amarilla do
 
               # Exist a section
               logger.info "==== Start scrap prospect detail: #{prospect_name}"
-              prospect.name = info_section.search('h1').try(:first).try(:text).try(:strip)
-              prospect.address = info_section.search('span.street-address').try(:first).try(:text).try(:strip)
-              prospect.postal_code = info_section.search('span.postal-code').try(:first).try(:text).try(:gsub, ',', '').try(:strip)
-              prospect.state = info_section.search('span.locality acronym').try(:first).try(:text).try(:strip)
-              prospect.hours = info_section.search('.horarios').try(:first).try(:text).try(:strip)
+              prospect.name = info_section.search('h1[itemprop="name"]').try(:first).try(:text).try(:strip)
+              prospect.address = info_section.search('p[itemprop="address"]').try(:first).try(:text).try(:strip)
+              prospect.postal_code = info_section.search('span[itemprop="postalCode"]').try(:first).try(:text).try(:gsub, ',', '').try(:strip)
+              prospect.state = info_section.search('span[itemprop="addressRegion"]').try(:first).try(:text).try(:strip)
+              prospect.hours = info_section.search('div#horarios').try(:first).try(:text).try(:strip)
               prospect.url = info_section.uri.to_s
 
-              email_addresses << info_section.search('a.correo').try(:first).try(:[], 'href').try(:gsub, 'mailto:','').try(:strip)
-              phone_numbers.concat(info_section.search('li.tel').map{|t| t.try(:text).try(:gsub, /tel:|mobile:|tel\/fax:/i,'').try(:gsub, /llama gratis/i, '').try(:gsub, /\*|•/i, '').try(:strip) }.select{|t| t.present?}.uniq)
-              product_names.concat(info_section.search('.servicios li').map{ |t| t.try(:text).try(:strip) }.select{|t| t.present?}.select{|t| t.present?}.uniq)
+              email_addresses << info_section.search('a.email-modal-toggle').try(:first).try(:[], :onclick).try(:split, ',').try(:[], -2).try(:gsub, "'", '').try(:split)
+              phone_numbers.concat(info_section.search('a[itemprop="telephone"]').map{|t| t.try(:text).try(:gsub, /tel:|mobile:|tel\/fax:/i,'').try(:gsub, /llama gratis/i, '').try(:gsub, /\*|•/i, '').try(:strip) }.select{|t| t.present?}.uniq)
+              product_names.concat(info_section.search('div#categorias p.tag').map{ |t| t.try(:text).try(:strip) }.select{|t| t.present?}.select{|t| t.present?}.uniq)
             end
 
             products = product_names.map do |product_name|
@@ -166,36 +160,35 @@ namespace :seccion_amarilla do
 
     project = Project.where(name: args[:project]).first_or_create
 
-    while true do
-      pages = Page.joins(:recollections).where(posted: false, recollections: {project_id: project.id}, page_type: page_type)
+    pages = Page.joins(:recollections).where(posted: false, recollections: {project_id: project.id}, page_type: page_type)
 
-      logger.info "While! pages: #{pages.size}"
-      pages.each do |page|
-        begin
-          current_page page.uri
-          logger.info "== Visit: #{current_page.uri.to_s}"
+    logger.info "While! pages: #{pages.size}"
 
-          super_page_link = current_page.search('a.super_pagina').first
-          if super_page_link.present? && super_page_link['href'].present? && super_page_section = Mechanize::Page::Link.new(super_page_link,agent,current_page).click rescue nil && super_page_section.present?
-            fill_form project, page, contact_form(super_page_section)
-            Page.find(page.id).update_attribute :posted, true
-            logger.info "==== Super page found, Posted: #{current_page.uri.to_s}"
-          else
-            Page.find(page.id).update_attribute :posted, true
-            logger.info "==== Super page not found found, Posted: #{current_page.uri.to_s}"
-          end
-        rescue StandardError => e
-          logger.error "== Error: #{e.message}" unless e.message.include?('Connection refused') or e.message.include?('getaddrinfo') or e.message.include?('ContactForm')
-        ensure
-          begin
-            logger.info "Reset Session!"
-            error = false
-            session.reset_session!
-          rescue Selenium::WebDriver::Error::UnhandledAlertError => e
-            logger.info "Webdriver Error: #{e.message}"
-            error = true
-          end while error
+    pages.each do |page|
+      begin
+        current_page page.uri
+        logger.info "== Visit: #{current_page.uri.to_s}"
+
+        super_page_link = current_page.search('span.icon-superpagina').try(:first).try(:parent)
+        if super_page_link.present? && super_page_link['href'].present? && super_page_section = Mechanize::Page::Link.new(super_page_link,agent,current_page).click rescue nil && super_page_section.present?
+          fill_form project, page, contact_form(super_page_section)
+          Page.find(page.id).update_attribute :posted, true
+          logger.info "==== Super page found, Posted: #{current_page.uri.to_s}"
+        else
+          Page.find(page.id).update_attribute :posted, true
+          logger.info "==== Super page not found found, Posted: #{current_page.uri.to_s}"
         end
+      rescue StandardError => e
+        logger.error "== Error: #{e.message}" unless e.message.include?('Connection refused') or e.message.include?('getaddrinfo') or e.message.include?('ContactForm')
+      ensure
+        begin
+          logger.info "Reset Session!"
+          error = false
+          session.reset_session!
+        rescue Selenium::WebDriver::Error::UnhandledAlertError => e
+          logger.info "Webdriver Error: #{e.message}"
+          error = true
+        end while error
       end
     end
   end
