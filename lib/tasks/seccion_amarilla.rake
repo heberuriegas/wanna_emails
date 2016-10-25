@@ -162,7 +162,7 @@ namespace :seccion_amarilla do
     @@dictionary =  YAML::load_file 'config/dictionary_seccion_amarilla.yml'
     @@dynamic_fill = false
 
-    Campaign = Campaign.find(args[:campaign_id])
+    campaign = Campaign.find(args[:campaign_id])
 
     pages = Page.joins(recollections: [:campaigns]).where(posted: false, 'campaigns.id' => campaign.id, page_type: page_type)
 
