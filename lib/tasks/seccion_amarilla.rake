@@ -150,7 +150,6 @@ namespace :seccion_amarilla do
 
   desc "Generate data dummy for services"
   task :post_messages, [:campaign_id] => :environment do |t, args|
-    args.with_defaults project: 'Asurela - Comercio'
     args.with_defaults recollection: 'Sección amarilla'
 
     logger = Logger.new("log/posts/#{args[:recollection].underscore.gsub(' ','_')}.log")
@@ -163,6 +162,7 @@ namespace :seccion_amarilla do
     @@dynamic_fill = false
 
     campaign = Campaign.find(args[:campaign_id])
+    project = campaign.project
 
     pages = Page.joins(recollections: [:campaigns]).where(posted: false, 'campaigns.id' => campaign.id, page_type: page_type)
 
