@@ -5,6 +5,8 @@ class Recollection < ActiveRecord::Base
   has_many :recollection_pages
   has_many :pages, through: :recollection_pages, dependent: :destroy
 
+  has_and_belongs_to_many :campaigns
+
   validates :name, presence: true
   validates :date, presence: true, if: "user.present?"
   validates :latitude, numericality: true, if: "user.present?"

@@ -149,7 +149,7 @@ namespace :seccion_amarilla do
   end
 
   desc "Generate data dummy for services"
-  task :post_messages, [:project] => :environment do |t, args|
+  task :post_messages, [:campaign_id] => :environment do |t, args|
     args.with_defaults project: 'Asurela - Comercio'
     args.with_defaults recollection: 'Sección amarilla'
 
@@ -162,9 +162,9 @@ namespace :seccion_amarilla do
     @@dictionary =  YAML::load_file 'config/dictionary_seccion_amarilla.yml'
     @@dynamic_fill = false
 
-    project = Project.where(name: args[:project]).first_or_create
+    Campaign = Campaign.find(args[:campaign_id])
 
-    pages = Page.joins(:recollections).where(posted: false, recollections: {project_id: project.id}, page_type: page_type)
+    pages = Page.joins(recollections: [:campaigns]).where(posted: false, 'campaigns.id' => campaign.id, page_type: page_type)
 
     logger.info "While! pages: #{pages.size}"
 
